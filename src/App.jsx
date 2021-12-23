@@ -2,15 +2,22 @@ import { useState, useEffect } from "react";
 import { db, auth } from "./utils/firebase";
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, setDoc, collection } from "firebase/firestore";
-import { getLocation, getDistance } from "./utils/location";
+import {
+  doc,
+  setDoc,
+  getDocs,
+  updateDoc,
+  collection,
+} from "firebase/firestore";
+import { getDistance } from "./utils/location";
+import useGeolocation from "react-navigator-geolocation";
 
 // import neccesary function for firestore
 function SignIn() {
-  const signInWithGoogle = () => {
+  async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider);
-  };
+  }
 
   return (
     <>
@@ -30,25 +37,68 @@ function SignOut() {
 }
 
 function App() {
-  const [location, setLocation] = useState(null);
-  const [user] = useAuthState(auth);
-  //gets distance in feet of two locations code works for both lat and long
+  const { coords } = useGeolocation();
+  const [location, setLocation] = useState();
+  const [userNow] = useAuthState(auth);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    //updates location ever 5 minutes
-    getLocation(setLocation);
-    console.log(location);
-    const interval = setInterval(() => {
-      getLocation(setLocation)
-      console.log(location);
+    setLocation(
+      coords && {
+        lat: coords.latitude,
+        lng: coords.longitude,
+      }
+    );
+  }, [coords]);
+
+  useEffect(() => {
+    if (location) {
+      getUsers(location).then((users) => {
+        console.log(users);
+        setUsers(users);
+        console.log(users);
+      });
     }
-    , 300000);
-    return () => clearInterval(interval);
+  }, [location]);
+  useEffect(() => {
+    if (userNow) {
+      initailizeUser(userNow);
+    }
+  }, [userNow]);
 
-  }, []);
-  //sets location1 and store it in firestore
+  async function initailizeUser(user) {
+    await setDoc(doc(db, "users", user.uid), {
+      name: user.displayName,
+      email: user.email,
+      profilePic: user.photoURL,
+      location: location,
+    });
+  }
+  //gets distance in feet of two locations code works for both lat and long
 
-  async function TestDB() {
+  async function getUsers(loc) {
+    const itemList = [];
+    const finalList = [];
+    const querySnapshot = await getDocs(collection(db, "users"));
+    querySnapshot.forEach((doc) => {
+      itemList.push(doc.data());
+    });
+    itemList.forEach((item) => {
+      const distance = getDistance(
+        item.location.lat,
+        item.location.lng,
+        loc.lat,
+        loc.lng
+      );
+      if (distance < 100000) {
+        finalList.push(item);
+      }
+    });
+    console.log(finalList);
+    return finalList;
+  }
+
+  async function initailizeUser(user) {
     await setDoc(doc(db, "users", user.uid), {
       name: user.displayName,
       email: user.email,
@@ -59,8 +109,18 @@ function App() {
 
   return (
     <div className="bg-blue-500 h-screen flex justify-center items-center ">
-      {user ? (
-        <Main location={location} TestDB={TestDB} user={user} />
+      {userNow ? (
+        <div className="flex flex-col items-center">
+          <div>
+            <SignOut />
+          </div>
+
+          <div className="carousel carousel-center">
+            {users.map((user) => {
+              return <Main user={user} />;
+            })}
+          </div>
+        </div>
       ) : (
         <SignIn />
       )}
@@ -69,35 +129,13 @@ function App() {
 }
 
 function Main(props) {
-  const { location, TestDB, user } = props;
+  const { user } = props;
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8">
+    <div className="bg-red-400 rounded-3xl  mx-16 p-8 carousel-item">
       <div className="flex flex-col items-center mb-5">
-        <h3 className="text-red-500 text-center">Welcome {user.displayName}</h3>
-        <img
-          className="rounded-full h-16 w-16"
-          src={user.photoURL}
-          alt="profile"
-        />
+        <h3 className="text-red-500 text-center">{user.name}</h3>
+        <img className="rounded-full " src={user.profilePic} alt="profile" />
       </div>
-      <div className="flex justify-evenly mb-5">
-        <button className="bg-emerald-500 p-3" onClick={TestDB}>
-          TestDB
-        </button>
-        <SignOut />
-      </div>
-
-      {location ? (
-        <div className="flex flex-col items-center">
-          <h3 className="text-red-500 text-center">
-            Your location is {location.lat} {location.lng}
-          </h3>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center">
-          <h3 className="text-red-500 text-center">Loading location</h3>
-        </div>
-      )}
     </div>
   );
 }

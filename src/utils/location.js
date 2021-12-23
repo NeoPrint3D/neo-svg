@@ -1,20 +1,3 @@
-const getLocation = (setLocation) => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  } else {
-    console.log("Geolocation is not supported by this browser.");
-  }
-};
 
 const getDistance = (lat1, lon1, lat2, lon2) => {
   var R = 6371; // Radius of the earth in km
@@ -32,4 +15,4 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
   return d * 3280.84;
 };
 
-export { getLocation, getDistance };
+export { getDistance };
