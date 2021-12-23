@@ -81,7 +81,7 @@ function App() {
           {userNow ? <SignOut auth={auth} /> : <SignIn auth={auth} />}
         </div>
       </header>
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-5rem)]">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-7.5rem)]">
         {userNow ? (
           <div className="flex flex-col items-center w-full">
             <div className="carousel carousel-center w-3/4 glass p-5 rounded-box overflow-auto">

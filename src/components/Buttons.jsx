@@ -9,7 +9,7 @@ function SignIn(props) {
 
   return (
     <>
-      <button className="btn btn-primary" onClick={signInWithGoogle}>
+      <button className="btn btn-primary bg-indigo-600" onClick={signInWithGoogle}>
         Sign in with Google
       </button>
     </>
@@ -20,7 +20,7 @@ function SignOut(props) {
   const { auth } = props;
 
   return (
-    <button className="btn btn-primary" onClick={() => signOut(auth)}>
+    <button className="btn btn-primary bg-indigo-600 " onClick={() => signOut(auth)}>
       Sign out
     </button>
   );
