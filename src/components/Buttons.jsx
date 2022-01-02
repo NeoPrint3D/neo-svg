@@ -1,4 +1,5 @@
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { useEffect } from "react";
 
 function SignIn(props) {
   const { auth } = props;
@@ -9,7 +10,7 @@ function SignIn(props) {
 
   return (
     <>
-      <button className="btn btn-primary bg-indigo-600" onClick={signInWithGoogle}>
+      <button className="btn bg-slate-600" onClick={signInWithGoogle}>
         Sign in with Google
       </button>
     </>
@@ -17,10 +18,11 @@ function SignIn(props) {
 }
 //create a sign out button
 function SignOut(props) {
-  const { auth } = props;
+  const { auth,makeOffline } = props;
+
 
   return (
-    <button className="btn btn-primary bg-indigo-600 " onClick={() => signOut(auth)}>
+    <button className="btn  bg-slate-600 " onClick={() => {signOut(auth);makeOffline();}}>
       Sign out
     </button>
   );

@@ -1,6 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Merienda+One&display=swap");
-
+@import url('https://fonts.googleapis.com/css2?family=Pushster&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.font-logo {
+  font-family: 'Pushster', sans-serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+
 
