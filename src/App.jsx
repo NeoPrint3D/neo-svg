@@ -89,7 +89,11 @@ function App() {
 
       <main className="grid grid-cols-2 h-[calc(100vh-4rem)]">
         <div className="flex justify-center items-center">
-          <div className={`carousel carousel-center w-[30rem] p-5  bg-blue-700/50 rounded-box overflow-auto border-green-700  ${search && 'border-4'}`}>
+          <div
+            className={`carousel carousel-center w-[30rem] p-5  bg-indigo-900/50 rounded-box overflow-auto border-indigo-200 ${
+              search && "border-4"
+            }`}
+          >
             {users && currentUser ? (
               users.docs.map((user) => {
                 if (

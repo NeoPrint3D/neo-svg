@@ -1,6 +1,5 @@
 // import module faker
 import faker from 'faker';
-//generate 100 fake people
 var people = [];
 for (var i = 0; i < 10; i++) {
     people.push(
