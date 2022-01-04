@@ -10,8 +10,8 @@ function SignIn(props) {
 
   return (
     <>
-      <button className="btn bg-slate-600" onClick={signInWithGoogle}>
-        Sign in with Google
+      <button className="bg-purple-900 p-3 rounded-2xl hover:ring ring-purple-500" onClick={signInWithGoogle}>
+        Sign In
       </button>
     </>
   );
@@ -22,7 +22,7 @@ function SignOut(props) {
 
 
   return (
-    <button className="btn  bg-slate-600 " onClick={() => {signOut(auth);makeOffline();}}>
+    <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500" onClick={() => {signOut(auth);makeOffline();}}>
       Sign out
     </button>
   );

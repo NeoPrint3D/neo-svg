@@ -3,18 +3,12 @@ import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { doc, setDoc, collection, updateDoc } from "firebase/firestore";
+
+import menuIMG from "./assets/menu.svg";
 import { SignIn, SignOut } from "./components/Buttons";
 import Card from "./components/Card";
-import CardPro from "./components/Cardpro";
-import initialDetails from "./data/initialDetails";
 
-
-
-
-
-import Search from './components/Search';
-
-
+import { MdOutlineSearch } from "react-icons/md";
 
 // import neccesary function for firestore
 
@@ -45,23 +39,30 @@ function App() {
   }
 
   return (
-    <div className=" bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500 h-screen ">
-      <header
-        id="header"
-        className="grid grid-cols-2 outer-color p-5 top border border-b-4 border-green-500 glass "
-      >
-        <div className="flex justify-start text-center align-middle">
-          <h5 className="text-3xl self-center fomt-logo ">WhoAround</h5>
+    <div className="h-screen bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500 bg-fixed">
+      <header className="bg-gray-900 h-16 grid grid-cols-2">
+        <div className="flex justify-start items-center ml-3">
+          <h5 className="text-3xl">Who Around</h5>
         </div>
-        <div className="flex justify-end gap-3 sm:gap-5 text-center place-items-center text-xs sm:text-sm">
+        <div className="flex justify-end items-center mr-3">
           {currentUser ? (
-            <div className="flex justify-evenly items-center gap-5">
-              <div className="avatar">
-                <div className="h-16 rounded-full ring ring-primary ring-offset-base-100">
-                  <img src={currentUser.photoURL} alt="profile" />
+            <div className="dropdown dropdown-end">
+              <button className="">
+                <img
+                  className="w-14 h-14 rounded-full border-green-700 border-4"
+                  src={currentUser.photoURL}
+                  alt="user"
+                />
+              </button>
+              <div
+                tabindex="0"
+                class="dropdown-content bg-slate-900 w-52 rounded p-5 border-red-500 border-4"
+              >
+                <div className="flex justify-around">
+                  <SignOut auth={auth} makeOffline={makeOffline} />
                 </div>
+                <div className="flex justify-center"></div>
               </div>
-              <SignOut auth={auth} makeOffline={makeOffline} />
             </div>
           ) : (
             <SignIn auth={auth} />
@@ -69,14 +70,13 @@ function App() {
         </div>
       </header>
 
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-7.5rem)]">
-        <div className="flex flex-col items-center w-full">
-          <div className="carousel carousel-center w-10/12 h-[360px] glass p-5 rounded-box overflow-auto">
-            {loading && <div>Loading...</div>}
+      <main className="grid grid-cols-2 h-[calc(100vh-4rem)]">
+        <div className="flex justify-center items-center">
+          <div className="carousel carousel-center w-[30rem] glass p-5 rounded-box overflow-auto z-0">
             {users && currentUser ? (
               users.docs.map((user) => {
                 if (user.id !== currentUser.uid) {
-                  return <CardPro user={user.data()} />;
+                  return <Card className="" user={user.data()} />;
                 }
               })
             ) : (
@@ -86,21 +86,9 @@ function App() {
             )}
           </div>
         </div>
-      </div>
-
-
-     
+      </main>
     </div>
   );
 }
 
-
-
-
-
-
 export default App;
-
-
-
-
