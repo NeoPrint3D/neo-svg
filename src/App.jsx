@@ -107,8 +107,8 @@ function App() {
               <Home users={users} search={search} currentUser={currentUser} />
             }
           />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/post/:id" element={<Post />} />
+          <Route path="/upload" element={<Upload currentUser={currentUser} />} />
+          <Route path="/post/:id" element={<Post/>} />
         </Routes>
       </main>
     </div>
