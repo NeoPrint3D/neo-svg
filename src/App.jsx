@@ -3,11 +3,11 @@ import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { doc, setDoc, collection, updateDoc } from "firebase/firestore";
-import { SignIn, SignOut } from "./components/Buttons";
+import { Link, Route, Routes } from "react-router-dom";
 import { BiSearch } from "react-icons/bi";
 import { BsUpload } from "react-icons/bs";
-import { Link, Route, Routes } from "react-router-dom";
 
+import { SignIn, SignOut } from "./components/Buttons";
 import Post from "./pages/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";

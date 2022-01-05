@@ -22,4 +22,7 @@ const db = getFirestore();
 const auth = getAuth();
 const perf=getPerformance();
 
+
+
+
 export { app, analytics, db, auth };
