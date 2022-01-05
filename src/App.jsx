@@ -1,23 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { doc, setDoc, collection, updateDoc } from "firebase/firestore";
 import { SignIn, SignOut } from "./components/Buttons";
-import Card from "./components/Card";
 import { BiSearch } from "react-icons/bi";
+import { BsUpload } from "react-icons/bs";
+import { Link, Route, Routes } from "react-router-dom";
+
+import Post from "./pages/Post";
+import Home from "./pages/Home";
+import Upload from "./pages/Upload";
 
 import people from "./data/list";
 
 function App() {
-  const [currentUser] = useAuthState(auth);
+  const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
-  const [users, loading] = useCollection(collection(db, "users"), {
-    snapshotListenOptions: { includeMetadataChanges: true },
-  });
+  const [currentUser] = useAuthState(auth);
+  const [users] = useCollection(collection(db, "users"));
+  const [posts, setPosts] = useCollection(collection(db, "posts"));
   // const users = people;
   useEffect(() => {
-    console.log(users);
     if (currentUser) {
       initailizeUser();
     }
@@ -42,26 +46,34 @@ function App() {
     <div className="h-screen bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500 bg-fixed">
       <header className="bg-gray-900 h-16 grid grid-cols-3">
         <div className="flex justify-start items-center ml-3">
-          <h5 className="text-xl">Who Around</h5>
+          <Link to="/" className="text-xl">
+            Who Around
+          </Link>
         </div>
         <div className="flex justify-center items-center">
-          <div class="form-control">
-            <div class="flex space-x-2">
+          <div className="form-control">
+            <div className="flex space-x-2">
               <input
                 placeholder="Search"
-                class="w-full input input-primary input-bordered"
+                className="w-full input input-primary input-bordered"
                 type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button class="btn btn-primary">
+              <button
+                className="btn btn-primary"
+                onClick={() => setSearch(searchQuery)}
+              >
                 <BiSearch size={30} />
               </button>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end items-center mr-3">
+        <div className="flex justify-end items-center mr-3 gap-5">
+          <Link to="/upload">
+            <BsUpload size={30} />
+          </Link>
           {currentUser ? (
             <div className="dropdown dropdown-end">
               <button>
@@ -72,7 +84,7 @@ function App() {
                 />
               </button>
               <div
-                tabindex="0"
+                tabIndex="0"
                 className="dropdown-content bg-slate-900 w-52 rounded p-5 border-purple-500 border-4"
               >
                 <div className="flex justify-around">
@@ -87,28 +99,17 @@ function App() {
         </div>
       </header>
 
-      <main className="grid grid-cols-2 h-[calc(100vh-4rem)]">
-        <div className="flex justify-center items-center">
-          <div
-            className={`carousel carousel-center w-[30rem] p-5  bg-indigo-900/50 rounded-box overflow-auto border-indigo-200 ${
-              search && "border-4"
-            }`}
-          >
-            {users && currentUser ? (
-              users.docs.map((user) => {
-                if (
-                  user.data().name.toLowerCase().includes(search.toLowerCase())
-                ) {
-                  return <Card key={user.data().uid} user={user.data()} />;
-                }
-              })
-            ) : (
-              <div className="flex h-full w-full justify-center items-center">
-                <h5 className="text-4xl"> Sign in to see who's on</h5>
-              </div>
-            )}
-          </div>
-        </div>
+      <main className="grid-cols-3 h-[calc(100vh-4rem)]">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home users={users} search={search} currentUser={currentUser} />
+            }
+          />
+          <Route path="/upload" element={<Upload />} />
+          <Route path="/post/:id" element={<Post />} />
+        </Routes>
       </main>
     </div>
   );
