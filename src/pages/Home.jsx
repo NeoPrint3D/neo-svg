@@ -2,7 +2,7 @@ import Card from "../components/Card";
 function Home(props) {
   const { currentUser, users, search } = props;
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center ">
       <div
         className={`w-64 h-36 carousel rounded-box carousel-vertical bg-indigo-900`}
       >

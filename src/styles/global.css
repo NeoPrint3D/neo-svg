@@ -3,11 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
-.font-logo {
-  font-family: 'Pushster', sans-serif;
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #fff;
+.background{
+  @apply flex justify-center bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500;
 }
 
 

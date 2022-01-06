@@ -18,9 +18,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
   const [currentUser] = useAuthState(auth);
-  const [users] = useCollection(collection(db, "users"));
-  const [posts, setPosts] = useCollection(collection(db, "posts"));
-  // const users = people;
+  const [users] = useCollection(collection(db, "users"));  // const users = people;
   useEffect(() => {
     if (currentUser) {
       initailizeUser();
@@ -43,7 +41,7 @@ function App() {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500 bg-fixed">
+    <div className="h-screen">
       <header className="bg-gray-900 h-16 grid grid-cols-3">
         <div className="flex justify-start items-center ml-3">
           <Link to="/" className="text-xl">
@@ -99,7 +97,7 @@ function App() {
         </div>
       </header>
 
-      <main className="grid-cols-3 h-[calc(100vh-4rem)]">
+      <main className="h-[calc(100vh-4rem)] background">
         <Routes>
           <Route
             path="/"
