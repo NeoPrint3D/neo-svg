@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 .background{
-  @apply flex justify-center bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500;
+  @apply flex justify-center items-center bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500;
 }
 
 

@@ -13,7 +13,7 @@ function Home(props) {
               userRef.name.toLowerCase().includes(search.toLowerCase()) &&
               userRef.uid !== currentUser.uid
             ) {
-              return <div className="my-5"><Card key={userRef.uid} user={userRef} /></div>;
+              return <ul key={userRef.uid} className="my-5"><Card user={userRef} /></ul>;
             }
           })
         ) : (

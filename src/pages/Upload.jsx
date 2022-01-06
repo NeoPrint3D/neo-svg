@@ -38,6 +38,8 @@ function Upload(props) {
           description,
           file: downloadURL,
           createdAt: new Date(),
+          likes: 0,
+          views: 0,
           user: {
             uid: currentUser.uid,
             name: currentUser.displayName,

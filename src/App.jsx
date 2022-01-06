@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { doc, setDoc, collection, updateDoc } from "firebase/firestore";
+import { doc, setDoc, collection } from "firebase/firestore";
 import { Link, Route, Routes } from "react-router-dom";
+
 import { BiSearch } from "react-icons/bi";
 import { BsUpload } from "react-icons/bs";
 
@@ -11,6 +12,7 @@ import { SignIn, SignOut } from "./components/Buttons";
 import Post from "./pages/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
+import Profile from "./pages/Profile";
 
 import people from "./data/list";
 
@@ -18,16 +20,12 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
   const [currentUser] = useAuthState(auth);
-  const [users] = useCollection(collection(db, "users"));  // const users = people;
+  const [users] = useCollection(collection(db, "users")); // const users = people;
   useEffect(() => {
     if (currentUser) {
       initailizeUser();
     }
   }, [currentUser]);
-
-  async function makeOffline() {
-    await updateDoc(db, "users", currentUser.uid, { status: false });
-  }
 
   async function initailizeUser() {
     console.log("initailizeUser");
@@ -37,6 +35,7 @@ function App() {
       email: currentUser.email,
       profilePic: currentUser.photoURL,
       status: true,
+      comments: [],
     });
   }
 
@@ -45,7 +44,7 @@ function App() {
       <header className="bg-gray-900 h-16 grid grid-cols-3">
         <div className="flex justify-start items-center ml-3">
           <Link to="/" className="text-xl">
-            Who Around
+            Lothar
           </Link>
         </div>
         <div className="flex justify-center items-center">
@@ -85,10 +84,14 @@ function App() {
                 tabIndex="0"
                 className="dropdown-content bg-slate-900 w-52 rounded p-5 border-purple-500 border-4"
               >
-                <div className="flex justify-around">
-                  <SignOut auth={auth} makeOffline={makeOffline} />
+                <div className="flex justify-center p-3">
+                  <button className="btn btn-ghost">
+                    <Link to="/profile">Profile</Link>
+                  </button>
                 </div>
-                <div className="flex justify-center"></div>
+                <div className="flex justify-center p-3">
+                  <SignOut auth={auth} />
+                </div>
               </div>
             </div>
           ) : (
@@ -105,8 +108,12 @@ function App() {
               <Home users={users} search={search} currentUser={currentUser} />
             }
           />
-          <Route path="/upload" element={<Upload currentUser={currentUser} />} />
-          <Route path="/post/:id" element={<Post/>} />
+          <Route
+            path="/upload"
+            element={<Upload currentUser={currentUser} />}
+          />
+          <Route path="/post/:id" element={<Post />} />
+          <Route path="/profile" element={<Profile currentUser={currentUser}/>} />
         </Routes>
       </main>
     </div>
