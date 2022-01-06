@@ -44,7 +44,7 @@ function App() {
       <header className="bg-gray-900 h-16 grid grid-cols-3">
         <div className="flex justify-start items-center ml-3">
           <Link to="/" className="text-xl">
-            Lothar
+            NeoSVG
           </Link>
         </div>
         <div className="flex justify-center items-center">
