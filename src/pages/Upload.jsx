@@ -1,6 +1,6 @@
 import { db, storage } from "../utils/firebase";
 import { addDoc, collection, updateDoc } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 function Upload(props) {
   const { currentUser } = props;
@@ -40,6 +40,8 @@ function Upload(props) {
           createdAt: new Date(),
           likes: 0,
           views: 0,
+          tags: [],
+          comments: [],
           user: {
             uid: currentUser.uid,
             name: currentUser.displayName,

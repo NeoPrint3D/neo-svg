@@ -1,7 +1,7 @@
 // import module faker
 import faker from 'faker';
 const people = {
-    'docs':[
+    'docs': [
 
     ]
 }

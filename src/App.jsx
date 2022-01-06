@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { doc, setDoc, collection } from "firebase/firestore";
+import { doc, setDoc, collection, getDoc } from "firebase/firestore";
 import { Link, Route, Routes } from "react-router-dom";
 
 import { BiSearch } from "react-icons/bi";
@@ -28,15 +28,17 @@ function App() {
   }, [currentUser]);
 
   async function initailizeUser() {
-    console.log("initailizeUser");
-    await setDoc(doc(db, "users", currentUser.uid), {
-      uid: currentUser.uid,
-      name: currentUser.displayName,
-      email: currentUser.email,
-      profilePic: currentUser.photoURL,
-      status: true,
-      comments: [],
-    });
+    const docSnap = await getDoc(doc(db, "users", currentUser.uid));
+    if (!docSnap.exists) {
+      await setDoc(doc(db, "users", currentUser.uid), {
+        uid: currentUser.uid,
+        name: currentUser.displayName,
+        email: currentUser.email,
+        profilePic: currentUser.photoURL,
+      });
+    } else {
+      console.log("user already exists");
+    }
   }
 
   return (
@@ -82,10 +84,10 @@ function App() {
               </button>
               <div
                 tabIndex="0"
-                className="dropdown-content bg-slate-900 w-52 rounded p-5 border-purple-500 border-4"
+                className="dropdown-content bg-slate-900 w-52 rounded p-3 border-black border-4"
               >
                 <div className="flex justify-center p-3">
-                  <button className="btn btn-ghost">
+                  <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
                     <Link to="/profile">Profile</Link>
                   </button>
                 </div>
@@ -112,8 +114,11 @@ function App() {
             path="/upload"
             element={<Upload currentUser={currentUser} />}
           />
+          <Route
+            path="/profile"
+            element={<Profile currentUser={currentUser} />}
+          />
           <Route path="/post/:id" element={<Post />} />
-          <Route path="/profile" element={<Profile currentUser={currentUser}/>} />
         </Routes>
       </main>
     </div>
