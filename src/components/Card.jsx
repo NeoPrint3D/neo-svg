@@ -7,12 +7,13 @@ function Card(props) {
 
   useEffect(() => {
     if (currentUser) {
-      const docRef = doc(db, "followers", `${currentUser.uid}_${user.uid}`);
+      const docRef = doc(db, "users", currentUser.uid);
       getDoc(docRef).then((docSnap) => {
         if (docSnap.exists) {
-          setIsFollowing(true);
-        } else {
-          setIsFollowing(false);
+          const userRef = docSnap.data();
+          if (userRef.following.includes(user.uid)) {
+            setIsFollowing(true);
+          }
         }
       });
     }
@@ -62,8 +63,12 @@ function Card(props) {
         <h5 className="text-base">{user.name}</h5>
       </div>
       <div className="flex justify-center items-center">
-      <button className={`btn btn-ghost`} onClick={()=>toggleFollow()}>{isFollowing ? 'follow':'unfollow'}</button>
-
+        <button
+          className={`btn btn-outline ${!isFollowing ? "btn-success" : "btn-ghost"}`}
+          onClick={() => toggleFollow()}
+        >
+          {!isFollowing ? "follow" : "unfollow"}
+        </button>
       </div>
     </div>
   );
