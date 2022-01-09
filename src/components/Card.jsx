@@ -1,16 +1,69 @@
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db } from "../utils/firebase";
+import { useState, useEffect } from "react";
 function Card(props) {
-  const { user } = props;
+  const { user, currentUser } = props;
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    if (currentUser) {
+      const docRef = doc(db, "followers", `${currentUser.uid}_${user.uid}`);
+      getDoc(docRef).then((docSnap) => {
+        if (docSnap.exists) {
+          setIsFollowing(true);
+        } else {
+          setIsFollowing(false);
+        }
+      });
+    }
+  }, [currentUser, user]);
+
+  async function toggleFollow() {
+    if (currentUser) {
+      const userRef = doc(db, "users", user.uid);
+      const currentRef = doc(db, "users", currentUser.uid);
+
+      const userDoc = await getDoc(userRef);
+      const currentDoc = await getDoc(currentRef);
+
+      if (userDoc.exists && currentDoc.exists) {
+        const userData = userDoc.data();
+        const currentData = currentDoc.data();
+        const followers = userData.followers || [];
+        const following = currentData.following || [];
+
+        if (!followers.includes(currentUser.uid)) {
+          followers.push(currentUser.uid);
+          await updateDoc(userRef, { followers });
+          await updateDoc(currentRef, { following: [...following, user.uid] });
+        } else {
+          const index = followers.indexOf(currentUser.uid);
+          followers.splice(index, 1);
+          await updateDoc(userRef, { followers });
+          await updateDoc(currentRef, {
+            following: following.filter((uid) => uid !== user.uid),
+          });
+        }
+      }
+      setIsFollowing(!isFollowing);
+    }
+  }
+
   return (
-    <div className="grid grid-rows-2 bg-slate-900 w-64 rounded-3xl">
-      <div className="flex flex-col justify-center items-center">
-        <div className={`h-12 avatar ${user.status ? "online" : "offline"}`}>
-          {user.profilePic ? (
-            <img className="rounded-full" src={user.profilePic} alt="profile" />
-          ) : (
-            <div className="rounded-full bg-gray-700"></div>
-          )}
-        </div>
-        <h5>{user.name}</h5>
+    <div className="flex-col w-[15rem] h-[10rem] bg-slate-600 rounded-xl">
+      <div className="flex justify-center items-center mb-3">
+        <img
+          className="w-16 h-16 rounded-full border-purple-700 border-4 "
+          src={user.profilePic}
+          alt="user"
+        />
+      </div>
+      <div className="flex justify-center items-center">
+        <h5 className="text-base">{user.name}</h5>
+      </div>
+      <div className="flex justify-center items-center">
+      <button className={`btn btn-ghost`} onClick={()=>toggleFollow()}>{isFollowing ? 'follow':'unfollow'}</button>
+
       </div>
     </div>
   );

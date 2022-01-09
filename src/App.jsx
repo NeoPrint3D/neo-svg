@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { doc, setDoc, collection, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { Link, Route, Routes } from "react-router-dom";
 
 import { BiSearch } from "react-icons/bi";
@@ -14,13 +13,12 @@ import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Profile from "./pages/Profile";
 
-import people from "./data/list";
+
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
   const [currentUser] = useAuthState(auth);
-  const [users] = useCollection(collection(db, "users")); // const users = people;
   useEffect(() => {
     if (currentUser) {
       initailizeUser();
@@ -107,7 +105,7 @@ function App() {
           <Route
             path="/"
             element={
-              <Home users={users} search={search} currentUser={currentUser} />
+              <Home search={search} currentUser={currentUser} />
             }
           />
           <Route
