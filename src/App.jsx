@@ -8,6 +8,7 @@ import { BiSearch } from "react-icons/bi";
 import { BsUpload } from "react-icons/bs";
 
 import { SignIn, SignOut } from "./components/Buttons";
+import {getDoc,doc} from "firebase/firestore"
 import Post from "./pages/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
@@ -18,7 +19,8 @@ import Profile from "./pages/Profile";
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
-  const [currentUser] = useAuthState(auth);
+  const [currentUserRef] = useAuthState(auth);
+  const [currentUser]= getDoc(doc)
   useEffect(() => {
     if (currentUser) {
       initailizeUser();
@@ -33,6 +35,8 @@ function App() {
         name: currentUser.displayName,
         email: currentUser.email,
         profilePic: currentUser.photoURL,
+        folowers:[],
+        following:[]
       });
     } else {
       console.log("user already exists");
