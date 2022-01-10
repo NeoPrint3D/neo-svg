@@ -19,6 +19,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
   const [currentUser] = useAuthState(auth);
+  
   useEffect(() => {
     if (currentUser) {
       initailizeUser();
@@ -33,6 +34,8 @@ function App() {
         name: currentUser.displayName,
         email: currentUser.email,
         profilePic: currentUser.photoURL,
+        folowers:[],
+        following:[]
       });
     } else {
       console.log("user already exists");
