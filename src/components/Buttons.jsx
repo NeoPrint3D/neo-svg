@@ -6,7 +6,7 @@ function SignIn(props) {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider);
   }
-
+//create a sign in button
   return (
     <>
       <button
