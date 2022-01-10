@@ -2,6 +2,7 @@ import Card from "../components/Card";
 import { db } from "../utils/firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection } from "firebase/firestore";
+import Post from "../components/Post";
 
 function Home(props) {
   const { currentUser, search } = props;
@@ -24,7 +25,7 @@ function Home(props) {
                 ) {
                   return (
                     <ul key={userRef.uid} className="my-5">
-                      <Card user={userRef} currentUser={currentUser}/>
+                      <Card user={userRef} currentUser={currentUser} />
                     </ul>
                   );
                 }
@@ -38,16 +39,16 @@ function Home(props) {
         </div>
       </div>
       <div>
-        <div className="flex justify-center items-center">
+       
           <div className="w-64 h-[20rem] carousel rounded-box carousel-vertical bg-indigo-900">
+            <div className="flex flex-col justify-center items-center">
             {posts &&
               posts.docs.map((post) => {
                 const postRef = post.data();
                 return (
-                  <div className="bg-blue-300">
-                    <h5>{postRef.title}</h5>
-                    <p>{postRef.description}</p>
-                  </div>
+                  <ul key={postRef.id} className="my-5">
+                    <Post post={postRef} />
+                  </ul>
                 );
               })}
           </div>

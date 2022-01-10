@@ -8,7 +8,7 @@ import { BiSearch } from "react-icons/bi";
 import { BsUpload } from "react-icons/bs";
 
 import { SignIn, SignOut } from "./components/Buttons";
-import Post from "./pages/Post";
+import Post from "./components/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Profile from "./pages/Profile";
