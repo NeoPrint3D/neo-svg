@@ -1,6 +1,7 @@
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { useState, useEffect } from "react";
+// export default Card;
 function Card(props) {
   const { user, currentUser } = props;
   const [isFollowing, setIsFollowing] = useState(false);
