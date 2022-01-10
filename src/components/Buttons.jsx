@@ -1,5 +1,4 @@
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { useEffect } from "react";
 
 function SignIn(props) {
   const { auth } = props;
