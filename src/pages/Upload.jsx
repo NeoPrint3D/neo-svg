@@ -44,8 +44,8 @@ function Upload(props) {
           comments: [],
           user: {
             uid: currentUser.uid,
-            name: currentUser.displayName,
-            profilePic: currentUser.photoURL,
+            name: currentUser.name,
+            profilePic: currentUser.profilePic,
           },
         });
         setProgress(false);

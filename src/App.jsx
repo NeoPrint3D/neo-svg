@@ -18,8 +18,19 @@ import Profile from "./pages/Profile";
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
-  const [currentUser] = useAuthState(auth);
-  
+  const [currentUserRef] = useAuthState(auth);
+  const [currentUser, setCurrentUser] = useState('');
+  useEffect(() => {
+    if (currentUserRef) {
+      const userRef = doc(db, `users`,`${currentUserRef.uid}`);
+      getDoc(userRef).then((user) => {
+        setCurrentUser(user.data());
+      });
+    }
+  }, [currentUserRef]);
+
+
+
   useEffect(() => {
     if (currentUser) {
       initailizeUser();
@@ -79,7 +90,7 @@ function App() {
               <button>
                 <img
                   className="w-14 h-14 rounded-full border-purple-700 border-4 "
-                  src={currentUser.photoURL}
+                  src={currentUser.profilePic}
                   alt="user"
                 />
               </button>
