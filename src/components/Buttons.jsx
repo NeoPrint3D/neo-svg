@@ -10,7 +10,10 @@ function SignIn(props) {
 
   return (
     <>
-      <button className="bg-purple-900 p-3 rounded-2xl hover:ring ring-purple-500" onClick={signInWithGoogle}>
+      <button
+        className="bg-purple-900 p-3 rounded-2xl hover:ring ring-purple-500"
+        onClick={signInWithGoogle}
+      >
         Sign In
       </button>
     </>
@@ -18,11 +21,15 @@ function SignIn(props) {
 }
 //create a sign out button
 function SignOut(props) {
-  const { auth,makeOffline } = props;
-
+  const { auth } = props;
 
   return (
-    <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500" onClick={() => {signOut(auth);makeOffline();}}>
+    <button
+      className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500"
+      onClick={() => {
+        signOut(auth);
+      }}
+    >
       Sign out
     </button>
   );
