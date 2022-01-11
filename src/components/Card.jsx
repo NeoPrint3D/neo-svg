@@ -65,7 +65,7 @@ function Card(props) {
       </div>
       <div className="flex justify-center items-center">
         <button
-          className={`btn btn-outline ${!isFollowing ? "btn-success" : "btn-ghost"}`}
+          className={`btn ${!isFollowing ? "btn-success" : "btn-ghost btn-outline"}`}
           onClick={() => toggleFollow()}
         >
           {!isFollowing ? "follow" : "unfollow"}

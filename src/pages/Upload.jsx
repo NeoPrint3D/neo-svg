@@ -59,7 +59,9 @@ function Upload(props) {
 
   return (
     <main>
-      <h5 className="text-5xl">Upload</h5>
+      <div className="flex justify-center">
+        <h5 className="text-5xl">Upload</h5>
+      </div>
       <form className="border-4 rounded-3xl">
         <div className="flex justify-center p-5 ">
           <input
