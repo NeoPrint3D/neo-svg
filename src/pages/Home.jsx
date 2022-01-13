@@ -1,15 +1,9 @@
-import Card from "../components/Card";
-import { db } from "../utils/firebase";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { collection } from "firebase/firestore";
+import Card from "../components/ProfileCard";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { useState, useEffect } from "react";
-import Post from "../components/Post";
+import PostCard from "../components/PostCard";
 
 function Home(props) {
-  const { currentUser, search } = props;
-  const [users] = useCollection(collection(db, "users")); // const users = people;
-  const [posts] = useCollection(collection(db, "posts"));
+  const { currentUser, search,users,posts } = props;
 
   return (
     <div className="grid grid-cols-2 gap-10">
@@ -51,7 +45,7 @@ function Home(props) {
                 const postRef = post.data();
                 return (
                   <ul key={postRef.id} className="my-5">
-                    <Post post={postRef} />
+                    <PostCard post={postRef} />
                   </ul>
                 );
               })}

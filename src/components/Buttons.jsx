@@ -1,7 +1,7 @@
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import {auth} from '../utils/firebase';
 
-function SignIn(props) {
-  const { auth } = props;
+function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider);
@@ -19,8 +19,7 @@ function SignIn(props) {
   );
 }
 //create a sign out button
-function SignOut(props) {
-  const { auth } = props;
+function SignOut() {
 
   return (
     <button

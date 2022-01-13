@@ -3,6 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.font-logo {
+  font-family: 'Pushster', sans-serif;
+}
+
 .background{
   @apply flex justify-center items-center bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500;
 }

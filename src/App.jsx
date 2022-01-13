@@ -3,39 +3,37 @@ import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { Link, Route, Routes } from "react-router-dom";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { collection } from "firebase/firestore";
 
 import { BiSearch } from "react-icons/bi";
 import { BsUpload } from "react-icons/bs";
 
-import { SignIn, SignOut } from "./components/Buttons";
-import Post from "./components/Post";
+import { SignOut } from "./components/Buttons";
+import Post from "./pages/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Profile from "./pages/Profile";
-
-
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [search, setSearch] = useState("");
   const [currentUserRef] = useAuthState(auth);
-  const [currentUser, setCurrentUser] = useState('');
+  const [currentUser, setCurrentUser] = useState("");
+  const [users] = useCollection(collection(db, "users")); // const users = people;
+  const [posts] = useCollection(collection(db, "posts"));
+
+
   useEffect(() => {
     if (currentUserRef) {
-      const userRef = doc(db, `users`,`${currentUserRef.uid}`);
+      console.log(auth);
+      const userRef = doc(db, `users`, `${currentUserRef.uid}`);
       getDoc(userRef).then((user) => {
         setCurrentUser(user.data());
       });
     }
-  }, [currentUserRef]);
-
-
-
-  useEffect(() => {
-    if (currentUser) {
-      initailizeUser();
-    }
-  }, [currentUser]);
+  }, [currentUserRef, auth]);
+  
 
   async function initailizeUser() {
     const docSnap = await getDoc(doc(db, "users", currentUser.uid));
@@ -45,8 +43,8 @@ function App() {
         name: currentUser.displayName,
         email: currentUser.email,
         profilePic: currentUser.photoURL,
-        folowers:[],
-        following:[]
+        folowers: [],
+        following: [],
       });
     } else {
       console.log("user already exists");
@@ -57,7 +55,7 @@ function App() {
     <div className="h-screen">
       <header className="bg-gray-900 h-16 grid grid-cols-3">
         <div className="flex justify-start items-center ml-3">
-          <Link to="/" className="text-xl">
+          <Link to="/" className="text-xl font-logo">
             NeoSVG
           </Link>
         </div>
@@ -67,7 +65,7 @@ function App() {
               <input
                 placeholder="Search"
                 className="w-full input input-primary input-bordered"
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -100,16 +98,20 @@ function App() {
               >
                 <div className="flex justify-center p-3">
                   <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
-                    <Link to="/profile">Profile</Link>
+                    {currentUser ? (
+                      <Link to={`profile/${currentUser.uid}`}>Profile</Link>
+                    ) : (
+                      <Link to={`profile/signUp`}>Profile</Link>
+                    )}
                   </button>
                 </div>
                 <div className="flex justify-center p-3">
-                  <SignOut auth={auth} />
+                  <SignOut />
                 </div>
               </div>
             </div>
           ) : (
-            <SignIn auth={auth} />
+            <Link to={`profile/login`}>Log in</Link>
           )}
         </div>
       </header>
@@ -119,7 +121,12 @@ function App() {
           <Route
             path="/"
             element={
-              <Home search={search} currentUser={currentUser} />
+              <Home
+                search={search}
+                currentUser={currentUser}
+                users={users}
+                posts={posts}
+              />
             }
           />
           <Route
@@ -127,10 +134,13 @@ function App() {
             element={<Upload currentUser={currentUser} />}
           />
           <Route
-            path="/profile"
-            element={<Profile currentUser={currentUser} />}
+            path="/profile/:uid"
+            element={<Profile currentUser={currentUser} users={users} />}
           />
-          <Route path="/post/:id" element={<Post />} />
+          <Route
+            path="/post/:id"
+            element={<Post currentUser={currentUser} posts={posts} />}
+          />
         </Routes>
       </main>
     </div>

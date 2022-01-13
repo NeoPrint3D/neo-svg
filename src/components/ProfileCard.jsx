@@ -1,4 +1,5 @@
-import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { Link } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useState, useEffect } from "react";
 // export default Card;
@@ -53,19 +54,24 @@ function Card(props) {
 
   return (
     <div className="flex-col w-[15rem] h-[10rem] bg-slate-600 rounded-xl">
-      <div className="flex justify-center items-center mb-3">
-        <img
-          className="w-16 h-16 rounded-full border-purple-700 border-4 "
-          src={user.profilePic}
-          alt="user"
-        />
-      </div>
-      <div className="flex justify-center items-center">
-        <h5 className="text-base">{user.name}</h5>
-      </div>
+      <Link to={`profile/${user.uid}`} className=" group">
+        <div className="flex justify-center items-center mb-3">
+          <img
+            className="group-hover:border-emerald-500 w-16 h-16 rounded-full border-purple-700 border-4 "
+            src={user.profilePic}
+            alt="user"
+          />
+        </div>
+      </Link>
+        <div className="flex justify-center items-center">
+          <h5 className="text-base">{user.name}</h5>
+        </div>
+
       <div className="flex justify-center items-center">
         <button
-          className={`btn ${!isFollowing ? "btn-success" : "btn-ghost btn-outline"}`}
+          className={`btn ${
+            !isFollowing ? "btn-success" : "btn-ghost btn-outline"
+          }`}
           onClick={() => toggleFollow()}
         >
           {!isFollowing ? "follow" : "unfollow"}

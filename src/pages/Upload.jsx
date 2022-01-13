@@ -1,13 +1,20 @@
 import { db, storage } from "../utils/firebase";
-import { addDoc, collection, updateDoc } from "firebase/firestore";
-import { useState } from "react";
+import { setDoc, doc } from "firebase/firestore";
+import { useState, useEffect } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { uid as id } from "uid";
 function Upload(props) {
   const { currentUser } = props;
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
   const [progress, setProgress] = useState(0);
+  const [ID, setID] = useState("");
+
+  useEffect(() => {
+    setID(id(8));
+    console.log(ID);
+  }, [progress]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,8 +40,9 @@ function Upload(props) {
       async () => {
         const downloadURL = await getDownloadURL(fileRef);
         console.log("downloadURL", downloadURL);
-        await addDoc(collection(db, "posts"), {
+        await setDoc(doc(db, "posts", ID), {
           title,
+          id: ID,
           description,
           file: downloadURL,
           createdAt: new Date(),
