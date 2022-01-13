@@ -7,19 +7,7 @@ function Card(props) {
   const { user, currentUser } = props;
   const [isFollowing, setIsFollowing] = useState(false);
 
-  useEffect(() => {
-    if (currentUser) {
-      const docRef = doc(db, "users", currentUser.uid);
-      getDoc(docRef).then((docSnap) => {
-        if (docSnap.exists) {
-          const userRef = docSnap.data();
-          if (userRef.following.includes(user.uid)) {
-            setIsFollowing(true);
-          }
-        }
-      });
-    }
-  }, [currentUser, user]);
+
 
   async function toggleFollow() {
     if (currentUser) {
@@ -54,7 +42,7 @@ function Card(props) {
 
   return (
     <div className="flex-col w-[15rem] h-[10rem] bg-slate-600 rounded-xl">
-      <Link to={`profile/${user.uid}`} className=" group">
+      <Link to={`user/${user.uid}`} className=" group">
         <div className="flex justify-center items-center mb-3">
           <img
             className="group-hover:border-emerald-500 w-16 h-16 rounded-full border-purple-700 border-4 "
@@ -63,9 +51,9 @@ function Card(props) {
           />
         </div>
       </Link>
-        <div className="flex justify-center items-center">
-          <h5 className="text-base">{user.name}</h5>
-        </div>
+      <div className="flex justify-center items-center">
+        <h5 className="text-base">{user.name}</h5>
+      </div>
 
       <div className="flex justify-center items-center">
         <button

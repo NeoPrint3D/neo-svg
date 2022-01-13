@@ -9,7 +9,6 @@ function Profile(props) {
   const { posts, currentUser } = props;
   const [post, setPost] = useState('');
   const [owns, setOwns] = useState(false);
-
   useEffect(() => {
     if (posts) {
       posts.docs.map((post) => {

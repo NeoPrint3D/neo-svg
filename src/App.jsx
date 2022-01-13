@@ -23,17 +23,14 @@ function App() {
   const [users] = useCollection(collection(db, "users")); // const users = people;
   const [posts] = useCollection(collection(db, "posts"));
 
-
   useEffect(() => {
     if (currentUserRef) {
-      console.log(auth);
       const userRef = doc(db, `users`, `${currentUserRef.uid}`);
       getDoc(userRef).then((user) => {
         setCurrentUser(user.data());
       });
     }
   }, [currentUserRef, auth]);
-  
 
   async function initailizeUser() {
     const docSnap = await getDoc(doc(db, "users", currentUser.uid));
@@ -81,7 +78,7 @@ function App() {
 
         <div className="flex justify-end items-center mr-3 gap-5">
           <Link to="/upload">
-            <BsUpload size={30} />
+              <BsUpload size={20} />
           </Link>
           {currentUser ? (
             <div className="dropdown dropdown-end">
@@ -99,9 +96,9 @@ function App() {
                 <div className="flex justify-center p-3">
                   <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
                     {currentUser ? (
-                      <Link to={`profile/${currentUser.uid}`}>Profile</Link>
+                      <Link to={`user/${currentUser.uid}`}>Profile</Link>
                     ) : (
-                      <Link to={`profile/signUp`}>Profile</Link>
+                      <Link to={`user/signUp`}>Profile</Link>
                     )}
                   </button>
                 </div>
@@ -134,7 +131,7 @@ function App() {
             element={<Upload currentUser={currentUser} />}
           />
           <Route
-            path="/profile/:uid"
+            path="/user/:uid"
             element={<Profile currentUser={currentUser} users={users} />}
           />
           <Route
