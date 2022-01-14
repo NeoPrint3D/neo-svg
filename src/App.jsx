@@ -24,7 +24,6 @@ function App() {
   const [users] = useCollection(collection(db, "users")); // const users = people;
   const [posts] = useCollection(collection(db, "posts"));
   const [currentUserUID, setCurrentUserUID] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     console.log("currentUserRef", currentUserRef, currentUserUID);
@@ -34,9 +33,9 @@ function App() {
         setCurrentUserUID(user.data().uid);
         setCurrentUser(user.data());
       });
-      setLoggedIn(true);
     } else {
       setCurrentUser("");
+      setCurrentUserUID("");
     }
   }, [currentUserRef]);
 
@@ -117,7 +116,7 @@ function App() {
                 </button>
               </li>
               <li className="flex justify-center p-3">
-                {currentUserUID ? <SignOut /> : <SignIn />}
+                {currentUser ? <SignOut /> : <SignIn />}
               </li>
             </ul>
           </div>
