@@ -39,22 +39,6 @@ function App() {
     }
   }, [currentUserRef]);
 
-  async function initailizeUser() {
-    const docSnap = await getDoc(doc(db, "users", currentUser.uid));
-    if (!docSnap.exists) {
-      await setDoc(doc(db, "users", currentUser.uid), {
-        uid: currentUser.uid,
-        name: currentUser.displayName,
-        email: currentUser.email,
-        profilePic: currentUser.photoURL,
-        folowers: [],
-        following: [],
-      });
-    } else {
-      console.log("user already exists");
-    }
-  }
-
   return (
     <div className="h-screen">
       <header className="bg-gray-900 h-16 grid grid-cols-3">
@@ -106,18 +90,21 @@ function App() {
               tabIndex="0"
               className="dropdown-content bg-slate-900 w-52 rounded p-2 border-black border-4"
             >
-              <li className="flex justify-center p-3">
-                <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
-                  {currentUserUID ? (
-                    <Link to={`user/${currentUserUID}`}>Profile</Link>
-                  ) : (
-                    <Link to={`user/signUp`}>Profile</Link>
-                  )}
-                </button>
-              </li>
-              <li className="flex justify-center p-3">
-                {currentUser ? <SignOut /> : <SignIn />}
-              </li>
+              {currentUser ? (
+                <>
+                  <li className="flex justify-center p-3">
+                    <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
+                      <Link to={`user/${currentUserUID}`}>Profile</Link>
+                    </button>
+                  </li>
+                  <li className="flex justify-center p-3">
+                    <SignOut />
+                  </li>
+                </>
+              ) : (
+                <SignIn />
+              )}
+              )
             </ul>
           </div>
         </div>
@@ -148,6 +135,7 @@ function App() {
             path="/post/:id"
             element={<Post currentUser={currentUser} posts={posts} />}
           />
+          <Route path="/user/SignIn" element={''} />
         </Routes>
       </main>
     </div>
