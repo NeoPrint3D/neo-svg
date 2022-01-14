@@ -5,11 +5,12 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { Link, Route, Routes } from "react-router-dom";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 
 import { BiSearch } from "react-icons/bi";
 import { BsUpload } from "react-icons/bs";
 
-import { SignOut } from "./components/Buttons";
+import { SignIn, SignOut } from "./components/Buttons";
 import Post from "./pages/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
@@ -22,15 +23,22 @@ function App() {
   const [currentUser, setCurrentUser] = useState("");
   const [users] = useCollection(collection(db, "users")); // const users = people;
   const [posts] = useCollection(collection(db, "posts"));
+  const [currentUserUID, setCurrentUserUID] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
+    console.log("currentUserRef", currentUserRef, currentUserUID);
     if (currentUserRef) {
       const userRef = doc(db, `users`, `${currentUserRef.uid}`);
       getDoc(userRef).then((user) => {
+        setCurrentUserUID(user.data().uid);
         setCurrentUser(user.data());
       });
+      setLoggedIn(true);
+    } else {
+      setCurrentUser("");
     }
-  }, [currentUserRef, auth]);
+  }, [currentUserRef]);
 
   async function initailizeUser() {
     const docSnap = await getDoc(doc(db, "users", currentUser.uid));
@@ -56,6 +64,7 @@ function App() {
             NeoSVG
           </Link>
         </div>
+
         <div className="flex justify-center items-center">
           <div className="form-control">
             <div className="flex space-x-2">
@@ -78,38 +87,40 @@ function App() {
 
         <div className="flex justify-end items-center mr-3 gap-5">
           <Link to="/upload">
-              <BsUpload size={20} />
+            <BsUpload size={20} />
           </Link>
-          {currentUser ? (
-            <div className="dropdown dropdown-end">
-              <button>
+
+          <div className="dropdown dropdown-end">
+            <div tabIndex="0">
+              {currentUser ? (
                 <img
                   className="w-14 h-14 rounded-full border-purple-700 border-4 "
                   src={currentUser.profilePic}
                   alt="user"
                 />
-              </button>
-              <div
-                tabIndex="0"
-                className="dropdown-content bg-slate-900 w-52 rounded p-3 border-black border-4"
-              >
-                <div className="flex justify-center p-3">
-                  <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
-                    {currentUser ? (
-                      <Link to={`user/${currentUser.uid}`}>Profile</Link>
-                    ) : (
-                      <Link to={`user/signUp`}>Profile</Link>
-                    )}
-                  </button>
-                </div>
-                <div className="flex justify-center p-3">
-                  <SignOut />
-                </div>
-              </div>
+              ) : (
+                "Log in"
+              )}
             </div>
-          ) : (
-            <Link to={`profile/login`}>Log in</Link>
-          )}
+
+            <ul
+              tabIndex="0"
+              className="dropdown-content bg-slate-900 w-52 rounded p-2 border-black border-4"
+            >
+              <li className="flex justify-center p-3">
+                <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
+                  {currentUserUID ? (
+                    <Link to={`user/${currentUserUID}`}>Profile</Link>
+                  ) : (
+                    <Link to={`user/signUp`}>Profile</Link>
+                  )}
+                </button>
+              </li>
+              <li className="flex justify-center p-3">
+                {currentUserUID ? <SignOut /> : <SignIn />}
+              </li>
+            </ul>
+          </div>
         </div>
       </header>
 

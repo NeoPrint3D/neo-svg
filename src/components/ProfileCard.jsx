@@ -7,34 +7,34 @@ function Card(props) {
   const { user, currentUser } = props;
   const [isFollowing, setIsFollowing] = useState(false);
 
-
+  useEffect(() => {
+    //determine if the current user is following the user
+    if (currentUser) {
+      if (user.followers.includes(currentUser.uid)) {
+        setIsFollowing(true);
+      } else {
+        setIsFollowing(false);
+      }
+    }
+  }, [currentUser, user]);
 
   async function toggleFollow() {
     if (currentUser) {
       const userRef = doc(db, "users", user.uid);
       const currentRef = doc(db, "users", currentUser.uid);
-
-      const userDoc = await getDoc(userRef);
-      const currentDoc = await getDoc(currentRef);
-
-      if (userDoc.exists && currentDoc.exists) {
-        const userData = userDoc.data();
-        const currentData = currentDoc.data();
-        const followers = userData.followers || [];
-        const following = currentData.following || [];
-
-        if (!followers.includes(currentUser.uid)) {
-          followers.push(currentUser.uid);
-          await updateDoc(userRef, { followers });
-          await updateDoc(currentRef, { following: [...following, user.uid] });
-        } else {
-          const index = followers.indexOf(currentUser.uid);
-          followers.splice(index, 1);
-          await updateDoc(userRef, { followers });
-          await updateDoc(currentRef, {
-            following: following.filter((uid) => uid !== user.uid),
-          });
-        }
+      const followers = user.followers || [];
+      const following = currentUser.following || [];
+      if (!followers.includes(currentUser.uid)) {
+        followers.push(currentUser.uid);
+        await updateDoc(userRef, { followers });
+        await updateDoc(currentRef, { following: [...following, user.uid] });
+      } else {
+        const index = followers.indexOf(currentUser.uid);
+        followers.splice(index, 1);
+        await updateDoc(userRef, { followers });
+        await updateDoc(currentRef, {
+          following: following.filter((uid) => uid !== user.uid),
+        });
       }
       setIsFollowing(!isFollowing);
     }
