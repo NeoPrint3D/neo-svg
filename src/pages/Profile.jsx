@@ -16,12 +16,18 @@ function Profile(props) {
           console.log(currentUser.uid);
           if (currentUser.uid === userRef.uid) {
             setOwns(true);
+          } else {
+            setOwns(false);
           }
           setUser(userRef);
         }
-      });
+      })
+      
     }
-  }, [uid]);
+    else {
+      setOwns(false);
+    }
+  }, [uid, currentUser, users]);
   return (
     <main className={`glass w-3/4 h-5/6 rounded-2xl p-10 `}>
       {user ? (

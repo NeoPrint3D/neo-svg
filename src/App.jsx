@@ -2,19 +2,23 @@ import { useState, useEffect } from "react";
 import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { Link, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection } from "firebase/firestore";
-import { signOut } from "firebase/auth";
+
+
+
 
 import { BiSearch } from "react-icons/bi";
-import { BsUpload } from "react-icons/bs";
 
-import { SignIn, SignOut } from "./components/Buttons";
 import Post from "./pages/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Profile from "./pages/Profile";
+import SignInPage from "./pages/SignIn";
+import SignUpPage from "./pages/SignUp";
+import Header from "./components/Header";
+
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,103 +29,45 @@ function App() {
   const [posts] = useCollection(collection(db, "posts"));
   const [currentUserUID, setCurrentUserUID] = useState("");
 
-  useEffect(() => {
-    console.log("currentUserRef", currentUserRef, currentUserUID);
-    if (currentUserRef) {
-      const userRef = doc(db, `users`, `${currentUserRef.uid}`);
-      getDoc(userRef).then((user) => {
-        setCurrentUserUID(user.data().uid);
-        setCurrentUser(user.data());
-      });
-    } else {
-      setCurrentUser("");
-      setCurrentUserUID("");
-    }
-  }, [currentUserRef]);
+  // useEffect(() => {
+  //   console.log("currentUserRef", currentUserRef.uid);
+  //   if (currentUserRef) {
+  //     const userRef = doc(db, `users`, `${currentUserRef.uid}`);
+  //     getDoc(userRef).then((user) => {
+  //       setCurrentUserUID(user.data().uid);
+  //       setCurrentUser(user.data());
+  //     });
+  //   } else {
+  //     setCurrentUser("");
+  //     setCurrentUserUID("");
+  //   }
+  // }, [currentUserRef]);
 
-  async function initailizeUser() {
-    const docSnap = await getDoc(doc(db, "users", currentUser.uid));
-    if (!docSnap.exists) {
-      await setDoc(doc(db, "users", currentUser.uid), {
-        uid: currentUser.uid,
-        name: currentUser.displayName,
-        email: currentUser.email,
-        profilePic: currentUser.photoURL,
-        folowers: [],
-        following: [],
-      });
-    } else {
-      console.log("user already exists");
-    }
-  }
+
 
   return (
     <div className="h-screen">
-      <header className="bg-gray-900 h-16 grid grid-cols-3">
-        <div className="flex justify-start items-center ml-3">
-          <Link to="/" className="text-xl font-logo">
-            NeoSVG
-          </Link>
-        </div>
-
-        <div className="flex justify-center items-center">
-          <div className="form-control">
-            <div className="flex space-x-2">
-              <input
-                placeholder="Search"
-                className="w-full input input-primary input-bordered"
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button
-                className="btn btn-primary"
-                onClick={() => setSearch(searchQuery)}
-              >
-                <BiSearch size={30} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-end items-center mr-3 gap-5">
-          <Link to="/upload">
-            <BsUpload size={20} />
-          </Link>
-
-          <div className="dropdown dropdown-end">
-            <div tabIndex="0">
-              {currentUser ? (
-                <img
-                  className="w-14 h-14 rounded-full border-purple-700 border-4 "
-                  src={currentUser.profilePic}
-                  alt="user"
-                />
-              ) : (
-                "Log in"
-              )}
-            </div>
-
-            <ul
-              tabIndex="0"
-              className="dropdown-content bg-slate-900 w-52 rounded p-2 border-black border-4"
+      <Header
+        currentUserUID={currentUserUID}
+        currentUser={currentUser}
+        children={
+          <div className="flex space-x-2">
+            <input
+              placeholder="Search"
+              className="w-full input input-primary input-bordered"
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button
+              className="btn btn-primary"
+              onClick={() => setSearch(searchQuery)}
             >
-              <li className="flex justify-center p-3">
-                <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
-                  {currentUserUID ? (
-                    <Link to={`user/${currentUserUID}`}>Profile</Link>
-                  ) : (
-                    <Link to={`user/signUp`}>Profile</Link>
-                  )}
-                </button>
-              </li>
-              <li className="flex justify-center p-3">
-                {currentUser ? <SignOut /> : <SignIn />}
-              </li>
-            </ul>
+              <BiSearch size={30} />
+            </button>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="h-[calc(100vh-4rem)] background">
         <Routes>
@@ -148,7 +94,11 @@ function App() {
             path="/post/:id"
             element={<Post currentUser={currentUser} posts={posts} />}
           />
+          <Route path="/SignIn" element={<SignInPage />} />
+          <Route path="/SignUp" element={<SignUpPage />} />
         </Routes>
+
+
       </main>
     </div>
   );
