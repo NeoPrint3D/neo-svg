@@ -1,5 +1,5 @@
 {
-  "name": "stikify-vite",
+  "name": "neo-svg",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
@@ -8,9 +8,12 @@
     "deploy": "vite build && firebase deploy"
   },
   "dependencies": {
+    "axios": "^0.25.0",
+    "crypto-js": "^4.1.1",
     "daisyui": "^1.19.0",
     "firebase": "^9.6.1",
     "firebase-tools": "^10.1.0",
+    "framer-motion": "^6.2.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-firebase-hooks": "^4.0.1",
