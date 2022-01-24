@@ -1,6 +1,6 @@
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import googleSVG from "../assets/google.svg";
+import { FcGoogle } from "react-icons/fc";
 
 function SignIn() {
   async function signInWithGoogle() {
@@ -11,11 +11,11 @@ function SignIn() {
   return (
     <div>
       <button
-        className="px-4 md:px-8 py-2 outline rounded hover:bg-purple-500"
+        className="transition-all px-4 md:px-8 py-2 outline rounded hover:bg-purple-500 hover:scale-110"
         onClick={signInWithGoogle}
       >
         <div className="flex justify-evenly items-center">
-          <img className="h-10" src={googleSVG} alt="google" />
+          <FcGoogle size={40} />
           <div className="divider divider-vertical"></div>
           <p>Sign in with Google</p>
         </div>

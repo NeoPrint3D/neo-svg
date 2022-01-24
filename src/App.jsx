@@ -12,7 +12,7 @@ import Post from "./pages/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Profile from "./pages/Profile";
-import SignInPage from "./pages/SignIn";
+import SignInPage from "./pages/SignUp";
 import Header from "./components/Header";
 
 function App() {
@@ -25,7 +25,7 @@ function App() {
   const [currentUserUID, setCurrentUserUID] = useState("");
 
   return (
-    <div className="h-screen">
+    <div className="h-screen text-white">
       <Header
         currentUserUID={currentUserUID}
         currentUser={currentUser}
