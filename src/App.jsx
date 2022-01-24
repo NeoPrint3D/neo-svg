@@ -13,7 +13,6 @@ import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Profile from "./pages/Profile";
 import SignInPage from "./pages/SignIn";
-
 import Header from "./components/Header";
 
 function App() {
@@ -24,20 +23,6 @@ function App() {
   const [users] = useCollection(collection(db, "users")); // const users = people;
   const [posts] = useCollection(collection(db, "posts"));
   const [currentUserUID, setCurrentUserUID] = useState("");
-
-  // useEffect(() => {
-  //   console.log("currentUserRef", currentUserRef.uid);
-  //   if (currentUserRef) {
-  //     const userRef = doc(db, `users`, `${currentUserRef.uid}`);
-  //     getDoc(userRef).then((user) => {
-  //       setCurrentUserUID(user.data().uid);
-  //       setCurrentUser(user.data());
-  //     });
-  //   } else {
-  //     setCurrentUser("");
-  //     setCurrentUserUID("");
-  //   }
-  // }, [currentUserRef]);
 
   return (
     <div className="h-screen">
@@ -55,7 +40,7 @@ function App() {
             />
             <button
               className="btn btn-primary"
-              onClick={() => setSearch(searchQuery)}
+              onClick={() => setCurrentUser(false)}
             >
               <BiSearch size={30} />
             </button>
@@ -88,7 +73,7 @@ function App() {
             path="/post/:id"
             element={<Post currentUser={currentUser} posts={posts} />}
           />
-          <Route path="/SignIn" element={<SignInPage />} />
+          <Route path="/SignIn" element={<SignInPage users={users} />} />
         </Routes>
       </main>
     </div>

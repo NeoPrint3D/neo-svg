@@ -8,7 +8,7 @@
 }
 
 .background{
-  @apply flex justify-center items-center bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500;
+  @apply flex justify-center items-center bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500 ;
 }
 
 .form{
@@ -16,6 +16,6 @@
 }
 
 .input-field{
-  @apply bg-gray-900 border-2 border-gray-700 p-2 rounded-lg w-4/5
+  @apply  border-2 border-gray-700 p-2 rounded-lg w-3/5
 }
 

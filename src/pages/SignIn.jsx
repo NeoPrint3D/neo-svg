@@ -1,52 +1,81 @@
-import { SignIn } from "../components/Buttons";
-import { auth } from "../utils/firebase";
+import { SignIn, SignOut } from "../components/Buttons";
 import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import CryptoJS from "crypto-js";
+import { decrypt } from "../utils/encryption";
 import axios from "axios";
+import { db, auth } from "../utils/firebase";
 import EaseIn from "../components/EaseIn";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { IoIosArrowBack } from "react-icons/io";
+import { Link } from "react-router-dom";
+import {
+  HiChevronLeft,
+  HiCheck,
+  HiExclamation,
+  HiOutlineKey,
+  HiOutlineMailOpen,
+  HiLockClosed,
+} from "react-icons/hi";
 
-function SignUpPage() {
-  const { currentUser } = useAuthState(auth);
+import { doc, getDoc, setDoc, query, where } from "firebase/firestore";
+
+function SignUpPage(props) {
+  const { users } = props;
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [taken, setTaken] = useState(false);
 
   const [vfCode, setVfCode] = useState("");
+  const [vfCodeConfirm, setVfCodeConfirm] = useState("");
 
   const [modalOpen, setModalOpen] = useState(false);
 
   const isVerified =
     email.length > 0 &&
-    password.length > 0 &&
+    password.length > 6 &&
     passwordConfirm.length > 0 &&
     password === passwordConfirm;
 
-  function decrypt(data, key) {
-    return CryptoJS.AES.decrypt(data, key).toString(CryptoJS.enc.Utf8);
-  }
-
-  function Test(e) {
+  async function Test(e) {
     e.preventDefault();
-
-    if (auth) {
-      setModalOpen(false);
-    } else {
-      setVfCode(1234);
-      setModalOpen(true);
+    createUserWithEmailAndPassword(auth, email, password).catch((error) => {
+      alert(error.message);
+    });
+    const userRef = auth.currentUser;
+    //make sure the username isnt already taken
+    if (users) {
+      // await setDoc(doc(db, "users", userRef.uid), {
+      //   uid: userRef.uid,
+      //   name: username || userRef.displayName,
+      //   email: email || userRef.email,
+      //   profilePic: userRef.photoURL || "",
+      //   folowers: [],
+      //   following: [],
+      // });
     }
   }
 
   useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
+    //check if the username is already taken
+
+    if (users) {
+      console.log(users.docs)
+      users.docs.forEach((user) => {
+        const userRef = user.data();
+        if (userRef.name === username) {
+          console.log("username taken");
+          setTaken(true);
+        } else {
+          console.log("username not taken");
+          setTaken(false);
+        }
+      });
+    }
+  }, [username]);
 
   async function handleReg(e) {
     e.preventDefault();
-    if (isVerified) {
+    if (isVerified && !auth) {
       await axios
         .get(
           `https://np3demail.herokuapp.com/auth?email=drew@ronsman.com&api_key=${
@@ -55,30 +84,17 @@ function SignUpPage() {
         )
         .then((res) => {
           const resRef = res.data;
-          console.log(res.status);
           setVfCode(decrypt(resRef.data, import.meta.env.VITE_HASH_KEY));
-          se;
+          setModalOpen(true);
+        })
+        .catch((err) => {
+          alert(err);
         });
-    }
-  }
-  async function initailizeUser() {
-    const docSnap = await getDoc(doc(db, "users", username));
-    if (!docSnap.exists) {
-      await setDoc(doc(db, "users", username), {
-        uid: currentUser.uid,
-        name: currentUser.displayName,
-        email: currentUser.email,
-        profilePic: currentUser.photoURL,
-        folowers: [],
-        following: [],
-      });
-    } else {
-      console.log("user already exists");
     }
   }
 
   return (
-    <>
+    <div className="form">
       {!modalOpen && (
         <EaseIn
           children={
@@ -88,39 +104,58 @@ function SignUpPage() {
               </div>
               <div>
                 <Input
-                  type="username"
-                  name="Username"
+                  icon={
+                    taken ? <HiExclamation size={20} /> : <HiCheck size={20} />
+                  }
+                  type="text"
+                  placeholder="Username"
                   value={username}
-                  method={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setUsername(e.target.value)}
+                  badge={taken ? "badge-warning" : "badge-success"}
+                  customClass={`${
+                    taken ? "bg-red-300" : "bg-slate-900"
+                  } input-field`}
                 />
+
                 <Input
-                  type="email"
-                  name="Email"
+                  icon={<HiOutlineMailOpen size={20} />}
+                  type={"email"}
                   value={email}
-                  method={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={"Email"}
+                  badge={"badge-info"}
                 />
                 <Input
-                  type="password"
-                  name="Password"
+                  icon={<HiOutlineKey size={20} />}
+                  type={"password"}
                   value={password}
-                  method={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={"Password"}
+                  badge={"badge-warning"}
                 />
                 <Input
-                  type="password"
-                  name="Confirm Password"
+                  icon={<HiLockClosed size={20} />}
+                  type={"password"}
                   value={passwordConfirm}
-                  method={(e) => setPasswordConfirm(e.target.value)}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  placeholder={"Confirm Password"}
+                  badge={"badge-error"}
                 />
+
                 <div className="flex justify-center mt-3">
                   <button
                     className="btn btn-outline"
-                    onClick={() =>
-                      modalOpen ? setModalOpen(false)() : setModalOpen(true)()
-                    }
+                    type="submit"
+                    // onClick={() =>
+                    //   modalOpen ? setModalOpen(false) : setModalOpen(true)
+                    // }
                     disabled={!isVerified}
                   >
                     {!vfCode ? "Sign Up" : "Verify Email"}
                   </button>
+                </div>
+                <div className="flex justify-center translate-y-[.5rem]">
+                  <Link to="/SignIn" className="text-purple-600 underline">Already have an account</Link>
                 </div>
                 <div className="divider">OR</div>
                 <div className="flex justify-center">
@@ -131,13 +166,14 @@ function SignUpPage() {
           }
         />
       )}
+
       {modalOpen && (
         <EaseIn
           children={
             <>
               <div className="flex justify-start">
                 <button onClick={() => setModalOpen(false)()}>
-                  <IoIosArrowBack size={20} />
+                  <HiChevronLeft size={20} />
                 </button>
               </div>
               <form className="flex flex-col" onSubmit={(e) => handleSubmit(e)}>
@@ -150,6 +186,8 @@ function SignUpPage() {
                     placeholder="* * * *"
                     type="text"
                     maxLength={4}
+                    value={vfCodeConfirm}
+                    onChange={(e) => setVfCodeConfirm(e.target.value)}
                   />
                 </div>
                 <div className="flex justify-center mt-10">
@@ -162,21 +200,26 @@ function SignUpPage() {
           }
         />
       )}
-    </>
+    </div>
   );
 }
 
-//a input field
 function Input(props) {
-  const { type, name, value, method } = props;
+  const { icon, placeholder, type, value, onChange, badge, customClass } =
+    props;
   return (
-    <div className="flex justify-center my-3">
+    <div className="flex justify-center items-center gap-x-3 my-3">
+      <div
+        className={`badge ${badge} badge-lg py-5 hover:scale-75 peer-focus:scale-110`}
+      >
+        {icon}
+      </div>
       <input
-        className="input-field"
+        className={customClass ? customClass : "input-field bg-slate-900 peer"}
         type={type}
         value={value}
-        onChange={method}
-        placeholder={name}
+        onChange={onChange}
+        placeholder={placeholder}
       />
     </div>
   );

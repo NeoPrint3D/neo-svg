@@ -5,10 +5,7 @@ import googleSVG from "../assets/google.svg";
 function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider).then((result) => {
-      const user = result.user;
-      console.log(user);
-    });
+    signInWithPopup(auth, provider);
   }
   //create a sign in button
   return (

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { SignIn, SignOut } from "./Buttons";
+import { auth } from "../utils/firebase";
 import { BsUpload } from "react-icons/bs";
 
 function Header(props) {
@@ -26,7 +27,7 @@ function Header(props) {
             {currentUser ? (
               <img
                 className="w-14 h-14 rounded-full border-purple-700 border-4 "
-                src={currentUser.profilePic}
+                src={currentUser.profilePic || ""}
                 alt="user"
               />
             ) : (
@@ -45,15 +46,15 @@ function Header(props) {
                     <Link to={`/user/${currentUserUID}`}>Profile</Link>
                   </button>
                 </li>
-                <li className="flex justify-center p-3">
-                  <SignOut />
-                </li>
               </>
             ) : (
               <li className="flex justify-center p-3">
-                <Link to='/SignIn'>Sign Up/Log in</Link>
+                <Link to="/SignIn">Sign Up/Log in</Link>
               </li>
             )}
+            <li className="flex justify-center p-3">
+              <SignOut />
+            </li>
           </ul>
         </div>
       </div>
