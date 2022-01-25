@@ -19,7 +19,6 @@ function Upload(props) {
   async function handleSubmit(e) {
     e.preventDefault();
     console.log(currentUser);
-
     const fileRef = ref(storage, `/posts/${currentUser.uid}-${file.name}`);
     const uploadTask = uploadBytesResumable(fileRef, file);
     uploadTask.on(

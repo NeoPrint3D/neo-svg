@@ -25,7 +25,9 @@ function SignUpPage(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [taken, setTaken] = useState(false);
+
+  const [isEmailTaken, setEmailTaken] = useState(false);
+  const [isNameTaken, setNameTaken] = useState(false);
 
   const [vfCode, setVfCode] = useState("");
   const [vfCodeConfirm, setVfCodeConfirm] = useState("");
@@ -37,20 +39,15 @@ function SignUpPage(props) {
     password.length > 0 &&
     passwordConfirm.length > 0 &&
     password === passwordConfirm &&
-    !taken;
+    !isNameTaken;
 
   async function CreateNewUser(e) {
-    if (e) {
-      e.preventDefault();
-    }
-    if (auth.currentUser) {
-      if (isVerified) {
-        createUserWithEmailAndPassword(auth, email, password).catch((error) => {
-          alert(error.message);
-        });
-      }
+    e.preventDefault();
+    if (vfCode === vfCodeConfirm) {
+      createUserWithEmailAndPassword(auth, email, password).catch((error) => {
+        alert(error.message);
+      });
       const userRef = auth.currentUser;
-      //make sure the username isnt already taken
       await setDoc(doc(db, "users", userRef.uid), {
         uid: userRef.uid,
         name: username || userRef.displayName,
@@ -65,24 +62,13 @@ function SignUpPage(props) {
   useEffect(() => {
     //check if the username is already taken
     if (users) {
-      console.log(users.docs);
       users.docs.forEach((user) => {
         const userRef = user.data();
-        if (userRef.name === username) {
-          console.log("username taken");
-          setTaken(true);
-        } else {
-          console.log("username not taken");
-          setTaken(false);
-        }
+        userRef.name === username ? setNameTaken(true) : setNameTaken(false);
+        userRef.email === email ? setEmailTaken(true) : setEmailTaken(false);
       });
     }
-  }, [username]);
-  useEffect(() => {
-    if (auth.currentUser) {
-      CreateNewUser();
-    }
-  }, [auth.currentUser]);
+  }, [users, username, email]);
 
   async function sendAuthCode(e) {
     e.preventDefault();
@@ -96,7 +82,6 @@ function SignUpPage(props) {
         .then((res) => {
           const resRef = res.data;
           setVfCode(decrypt(resRef.data, import.meta.env.VITE_HASH_KEY));
-          console.log(vfCode);
           setModalOpen(true);
         })
         .catch((err) => {
@@ -107,81 +92,97 @@ function SignUpPage(props) {
 
   return (
     <div className="form">
+      {isEmailTaken}
+      {isNameTaken}
       {!modalOpen && (
         <EaseIn
           children={
             <>
               <form className="flex flex-col" onSubmit={(e) => sendAuthCode(e)}>
-                <div className="flex justify-center  mb-3">
+                <div className="flex justify-center mb-3">
                   <h1 className="text-4xl">Sign Up</h1>
                 </div>
-                <div>
-                  <div>
-                    <Input
-                      icon={
-                        taken ? (
-                          <HiExclamation size={20} />
-                        ) : (
-                          <HiCheck size={20} />
-                        )
-                      }
-                      type="text"
-                      placeholder="Username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      badge={taken ? "badge-warning" : "badge-success"}
-                      message={
-                        taken && (
-                          <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-20">
-                            <p className="text-xs text-red-500 font-extrabold">
-                              Username already taken
-                            </p>
-                          </div>
-                        )
-                      }
-                      customClass={`${
-                        taken ? "bg-red-300" : "bg-slate-900"
-                      } input-field`}
-                    />
-                  </div>
+                <Input
+                  icon={
+                    isNameTaken ? (
+                      <HiExclamation size={20} />
+                    ) : (
+                      <HiCheck size={20} />
+                    )
+                  }
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  badge={isNameTaken ? "badge-warning" : "badge-success"}
+                  message={
+                    isNameTaken && (
+                      <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-20">
+                        <p className="text-xs text-red-500 font-extrabold">
+                          Username already taken
+                        </p>
+                      </div>
+                    )
+                  }
+                  customClass={`${
+                    isNameTaken ? "bg-red-300" : "bg-slate-900"
+                  } input-field`}
+                />
+                <Input
+                  icon={
+                    isEmailTaken ? (
+                      <HiExclamation size={20} />
+                    ) : (
+                      <HiOutlineMailOpen size={20} />
+                    )
+                  }
+                  type="text"
+                  placeholder="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  badge={isEmailTaken ? "badge-warning" : "badge-info"}
+                  message={
+                    isEmailTaken && (
+                      <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-20">
+                        <p className="text-xs text-red-500 font-extrabold">
+                          Email Exists
+                        </p>
+                      </div>
+                    )
+                  }
+                  customClass={`${
+                    isEmailTaken ? "bg-red-300" : "bg-slate-900"
+                  } input-field`}
+                />
 
-                  <Input
-                    icon={<HiOutlineMailOpen size={20} />}
-                    type={"email"}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={"Email"}
-                    badge={"badge-info"}
-                  />
-                  <Input
-                    icon={<HiOutlineKey size={20} />}
-                    type={"password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={"Password"}
-                    badge={"badge-warning"}
-                  />
-                  <Input
-                    icon={<HiLockClosed size={20} />}
-                    type={"password"}
-                    value={passwordConfirm}
-                    onChange={(e) => setPasswordConfirm(e.target.value)}
-                    placeholder={"Confirm Password"}
-                    badge={"badge-error"}
-                  />
+                <Input
+                  icon={<HiOutlineKey size={20} />}
+                  type={"password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={"Password"}
+                  badge={"badge-warning"}
+                />
+                <Input
+                  icon={<HiLockClosed size={20} />}
+                  type={"password"}
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  placeholder={"Confirm Password"}
+                  badge={"badge-error"}
+                />
 
-                  <div className="flex justify-center mt-3">
-                    <button
-                      className="btn btn-outline"
-                      type="submit"
-                      // onClick={() =>
-                      //   modalOpen ? setModalOpen(false) : setModalOpen(true)
-                      // }
-                      disabled={!isVerified}
-                    >
-                      {!vfCode ? "Sign Up" : "Verify Email"}
-                    </button>
-                  </div>
+                <div className="flex justify-center mt-3">
+                  <button
+                    className="btn btn-outline"
+                    type="submit"
+                    // onClick={() =>
+                    //   modalOpen ? setModalOpen(false) : setModalOpen(true)
+                    // }
+                    disabled={!isVerified}
+                  >
+                    {!vfCode ? "Sign Up" : "Verify Email"}
+                  </button>
                 </div>
               </form>
               <div className="flex justify-center translate-y-[.5rem]">
@@ -191,9 +192,7 @@ function SignUpPage(props) {
               </div>
               <div className="divider">OR</div>
               <div className="flex justify-center">
-                <button>
-                  <SignIn />
-                </button>
+                <SignIn />
               </div>
             </>
           }
@@ -252,7 +251,7 @@ function Input(props) {
     message,
   } = props;
   return (
-    <div className="flex justify-center items-center gap-x-3 my-3">
+    <div className="flex justify-center items-center gap-x-3 my-2">
       <div className="flex flex-row-reverse items-center group">
         <div className={`badge ${badge} badge-lg py-5 hover:scale-110 peer`}>
           <div>{icon}</div>

@@ -1,11 +1,22 @@
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { db, auth } from "../utils/firebase";
 import { FcGoogle } from "react-icons/fc";
+import { setDoc, doc } from "firebase/firestore";
 
 function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
+    signInWithPopup(auth, provider).then((result) => {
+      const userRef = result.user;
+      setDoc(doc(db, "users", userRef.uid), {
+        uid: userRef.uid,
+        name: userRef.displayName,
+        email: userRef.email,
+        profilePic: userRef.photoURL,
+        folowers: [],
+        following: [],
+      });
+    });
   }
   //create a sign in button
   return (
@@ -15,7 +26,7 @@ function SignIn() {
         onClick={signInWithGoogle}
       >
         <div className="flex justify-evenly items-center">
-          <FcGoogle size={40} />
+          <FcGoogle size={35} />
           <div className="divider divider-vertical"></div>
           <p>Sign in with Google</p>
         </div>

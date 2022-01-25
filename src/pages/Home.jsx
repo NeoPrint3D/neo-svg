@@ -30,7 +30,7 @@ function Home(props) {
     <>
       {posts ? (
         <motion.div
-          className="flex flex-col justify-center items-center bg-slate-900 p-5 w-11/12 h-[calc(100vh-10rem)] rounded-2xl gap-y-10"
+          className="flex flex-col justify-center items-center bg-slate-900 p-5 w-11/12 max-w-[80%] h-[calc(100vh-10rem)] rounded-2xl gap-y-10"
           variants={container}
           initial="hidden"
           animate="visible"
@@ -39,10 +39,10 @@ function Home(props) {
             const postRef = post.data();
             return (
               <motion.div
-                className="grid grid-cols-3 bg-slate-600 rounded-2xl h-24 w-[calc(100vw-10rem)]"
+                className="grid grid-cols-3 bg-slate-600 rounded-2xl p-3 h-5/6 w-11/12 "
                 variants={item}
               >
-                <div className="flex justify-center items-center">
+                <div className="flex justify-start items-center">
                   <img className="w-20" src={postRef.file} alt="" />
                   <div className="divider divider-vertical"></div>
                 </div>
@@ -52,7 +52,7 @@ function Home(props) {
           })}
         </motion.div>
       ) : (
-        <div className="flex flex-col justify-center items-center bg-slate-900 p-5 w-11/12 h-[calc(100vh-10rem)] rounded-2xl gap-y-5">
+        <div className="flex flex-col justify-center items-center bg-slate-900 p-5 w-8/12 h-[calc(100vh-10rem)] rounded-2xl gap-y-5">
           <AiOutlineLoading3Quarters
             size={50}
             className="animate-spin ring-rounded text-green-600"

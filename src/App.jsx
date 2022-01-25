@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { db, auth } from "./utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { Route, Routes } from "react-router-dom";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection } from "firebase/firestore";
@@ -22,12 +22,23 @@ function App() {
   const [currentUser, setCurrentUser] = useState("");
   const [users] = useCollection(collection(db, "users")); // const users = people;
   const [posts] = useCollection(collection(db, "posts"));
-  const [currentUserUID, setCurrentUserUID] = useState("");
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      console.log(auth.currentUser.uid);
+      getDoc(doc(db, "users", auth.currentUser.uid)).then((user) => {
+        setCurrentUser(user.data());
+        console.log("currentUser", user.data());
+      });
+    } else {
+      console.log("currentUserRef", currentUserRef);
+      setCurrentUser("");
+    }
+  }, [auth.currentUser]);
 
   return (
     <div className="h-screen text-white">
       <Header
-        currentUserUID={currentUserUID}
         currentUser={currentUser}
         children={
           <div className="flex space-x-2">
@@ -38,10 +49,7 @@ function App() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button
-              className="btn btn-primary"
-              onClick={() => setCurrentUser(false)}
-            >
+            <button className="btn btn-primary" onClick={() => ""}>
               <BiSearch size={30} />
             </button>
           </div>
@@ -66,14 +74,14 @@ function App() {
             element={<Upload currentUser={currentUser} />}
           />
           <Route
-            path="/user/:uid"
+            path="/user/:username"
             element={<Profile currentUser={currentUser} users={users} />}
           />
           <Route
             path="/post/:id"
             element={<Post currentUser={currentUser} posts={posts} />}
           />
-          <Route path="/SignIn" element={<SignInPage users={users} />} />
+          <Route path="/SignUp" element={<SignInPage users={users} />} />
         </Routes>
       </main>
     </div>
