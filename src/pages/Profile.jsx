@@ -3,31 +3,23 @@ import { FaRegEdit } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 
 function Profile(props) {
-  const { uid } = useParams();
+  const { username } = useParams();
   const { currentUser, users } = props;
   const [owns, setOwns] = useState(false);
   const [user, setUser] = useState({});
 
+  //querys the data by username
   useEffect(() => {
-    if (users && currentUser) {
-      users.docs.map((user) => {
-        const userRef = user.data();
-        if (userRef.uid === uid) {
-          console.log(currentUser.uid);
-          if (currentUser.uid === userRef.uid) {
-            setOwns(true);
-          } else {
-            setOwns(false);
-          }
-          setUser(userRef);
+    if (users) {
+      setOwns(user.username === currentUser.username);
+      users.docs.forEach((doc) => {
+        if (doc.data().name === username) {
+          console.log(doc.data());
+          setUser(doc.data());
         }
-      })
-      
+      });
     }
-    else {
-      setOwns(false);
-    }
-  }, [uid, currentUser, users]);
+  }, [currentUser, users]);
   return (
     <main className={`glass w-3/4 h-5/6 rounded-2xl p-10 `}>
       {user ? (
@@ -38,21 +30,25 @@ function Profile(props) {
           <div className="flex flex-col justify-center">
             <div className="flex justify-center">
               <h5>{user.name}</h5>
-              {owns ? (
-              <FaRegEdit size={30} />
-              ) : (
-                <div></div>
-              )}
+              {owns ? <FaRegEdit size={30} /> : <div></div>}
             </div>
             {true && (
               <div className="flex justify-center">
-                <img
-                  className={`w-5/8 h-5/8 rounded-full  ${
-                    owns ? "border-green-500" : "border-red-500"
-                  } border-4 `}
-                  src={user.profilePic}
-                  alt="user"
-                />
+                {user.profilePic ? (
+                  <img
+                    className={`w-5/8 h-5/8 rounded-full  ${
+                      owns ? "border-green-500" : "border-red-500"
+                    } border-4 `}
+                    src={user.profilePic}
+                    alt="user"
+                  />
+                ) : (
+                  <div className="flex justify-center items-center w-20 h-20 rounded-full bg-gray-700 border-4 border-purple-700">
+                    <h1 className="text-3xl text-center">
+                      {`${user.name}`.charAt(0)}
+                    </h1>
+                  </div>
+                )}
               </div>
             )}
           </div>

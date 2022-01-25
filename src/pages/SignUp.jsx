@@ -5,6 +5,7 @@ import { decrypt } from "../utils/encryption";
 import axios from "axios";
 import { db, auth } from "../utils/firebase";
 import EaseIn from "../components/EaseIn";
+import Input from "../components/Input";
 import { Link } from "react-router-dom";
 import {
   HiChevronLeft,
@@ -14,8 +15,6 @@ import {
   HiOutlineMailOpen,
   HiLockClosed,
 } from "react-icons/hi";
-
-import { FcGoogle } from "react-icons/fc";
 
 import { doc, getDoc, setDoc, query, where } from "firebase/firestore";
 
@@ -36,26 +35,36 @@ function SignUpPage(props) {
 
   const isVerified =
     email.length > 0 &&
-    password.length > 0 &&
-    passwordConfirm.length > 0 &&
+    password.length >= 6 &&
+    passwordConfirm.length >= 6 &&
     password === passwordConfirm &&
-    !isNameTaken;
+    !isNameTaken &&
+    !isEmailTaken;
 
   async function CreateNewUser(e) {
     e.preventDefault();
     if (vfCode === vfCodeConfirm) {
-      createUserWithEmailAndPassword(auth, email, password).catch((error) => {
-        alert(error.message);
-      });
-      const userRef = auth.currentUser;
-      await setDoc(doc(db, "users", userRef.uid), {
-        uid: userRef.uid,
-        name: username || userRef.displayName,
-        email: email || userRef.email,
-        profilePic: userRef.photoURL || "",
-        folowers: [],
-        following: [],
-      });
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((user) => {
+          console.log(user.user);
+          setDoc(doc(db, "users", user.user.uid), {
+            uid: user.user.uid,
+            name: username,
+            email: user.user.email,
+            profilePic: "",
+            folowers: [],
+            following: [],
+            accountCreated: new Date(),
+          }).then(() => {
+            alert("Account created successfully");
+            window.location.href = "/home";
+          });
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    } else {
+      alert("Verification code does not match");
     }
   }
 
@@ -91,16 +100,14 @@ function SignUpPage(props) {
   }
 
   return (
-    <div className="form">
-      {isEmailTaken}
-      {isNameTaken}
+    <div className="form-layout">
       {!modalOpen && (
         <EaseIn
           children={
             <>
-              <form className="flex flex-col" onSubmit={(e) => sendAuthCode(e)}>
+              <form className="form-field" onSubmit={(e) => sendAuthCode(e)}>
                 <div className="flex justify-center mb-3">
-                  <h1 className="text-4xl">Sign Up</h1>
+                  <h5 className="text-4xl">Sign Up</h5>
                 </div>
                 <Input
                   icon={
@@ -117,7 +124,7 @@ function SignUpPage(props) {
                   badge={isNameTaken ? "badge-warning" : "badge-success"}
                   message={
                     isNameTaken && (
-                      <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-20">
+                      <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-[3.5rem] -translate-y-5">
                         <p className="text-xs text-red-500 font-extrabold">
                           Username already taken
                         </p>
@@ -143,7 +150,7 @@ function SignUpPage(props) {
                   badge={isEmailTaken ? "badge-warning" : "badge-info"}
                   message={
                     isEmailTaken && (
-                      <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-20">
+                      <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-5 -translate-y-5">
                         <p className="text-xs text-red-500 font-extrabold">
                           Email Exists
                         </p>
@@ -174,14 +181,11 @@ function SignUpPage(props) {
 
                 <div className="flex justify-center mt-3">
                   <button
-                    className="btn btn-outline"
+                    className="btn btn-outline text-white"
                     type="submit"
-                    // onClick={() =>
-                    //   modalOpen ? setModalOpen(false) : setModalOpen(true)
-                    // }
                     disabled={!isVerified}
                   >
-                    {!vfCode ? "Sign Up" : "Verify Email"}
+                    Verify Email
                   </button>
                 </div>
               </form>
@@ -225,7 +229,15 @@ function SignUpPage(props) {
                     onChange={(e) => setVfCodeConfirm(e.target.value)}
                   />
                 </div>
-                <div className="flex justify-center mt-10">
+                <div className="flex justify-center mt-3">
+                  <button
+                    className="underline text-purple-600"
+                    onClick={(e) => sendAuthCode(e)}
+                  >
+                    Resend auth code
+                  </button>
+                </div>
+                <div className="flex justify-center mt-5">
                   <button className="btn btn-outline" type="submit">
                     Create new account
                   </button>
@@ -235,37 +247,6 @@ function SignUpPage(props) {
           }
         />
       )}
-    </div>
-  );
-}
-
-function Input(props) {
-  const {
-    icon,
-    placeholder,
-    type,
-    value,
-    onChange,
-    badge,
-    customClass,
-    message,
-  } = props;
-  return (
-    <div className="flex justify-center items-center gap-x-3 my-2">
-      <div className="flex flex-row-reverse items-center group">
-        <div className={`badge ${badge} badge-lg py-5 hover:scale-110 peer`}>
-          <div>{icon}</div>
-        </div>
-        {message}
-      </div>
-
-      <input
-        className={customClass ? customClass : "input-field bg-slate-900 peer"}
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-      />
     </div>
   );
 }

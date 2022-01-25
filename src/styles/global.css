@@ -6,16 +6,18 @@
 .font-logo {
   font-family: 'Pushster', sans-serif;
 }
-
 .background{
-  @apply flex justify-center items-center bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500 ;
+  @apply flex bg-fixed justify-center items-center bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500 ;
 }
 
-.form{
+.form-layout{
   @apply w-3/4 max-w-[50rem] bg-gradient-to-b from-gray-700 to-slate-900  p-5 rounded-3xl shadow-lg shadow-purple-700
 }
 
 .input-field{
   @apply  border-2 border-gray-700 p-2 rounded-lg w-3/5
+}
+.x-center{
+  @apply flex justify-center
 }
 

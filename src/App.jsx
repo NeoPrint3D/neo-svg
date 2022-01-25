@@ -12,7 +12,8 @@ import Post from "./pages/Post";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Profile from "./pages/Profile";
-import SignInPage from "./pages/SignUp";
+import SignUpPage from "./pages/SignUp";
+import SignInPage from "./pages/SignIn";
 import Header from "./components/Header";
 
 function App() {
@@ -58,17 +59,16 @@ function App() {
 
       <main className="h-[calc(100vh-4rem)] background">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                search={search}
-                currentUser={currentUser}
-                users={users}
-                posts={posts}
-              />
-            }
-          />
+          {["/", "/home"].map((path) => (
+            <Route
+              path={path}
+              element={
+                <Home currentUser={currentUser} users={users} posts={posts} />
+              }
+              key={path}
+            />
+          ))}
+
           <Route
             path="/upload"
             element={<Upload currentUser={currentUser} />}
@@ -81,7 +81,8 @@ function App() {
             path="/post/:id"
             element={<Post currentUser={currentUser} posts={posts} />}
           />
-          <Route path="/SignUp" element={<SignInPage users={users} />} />
+          <Route path="/SignUp" element={<SignUpPage users={users} />} />
+          <Route path="/SignIn" element={<SignInPage users={users} />} />
         </Routes>
       </main>
     </div>

@@ -6,17 +6,19 @@ import { setDoc, doc } from "firebase/firestore";
 function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider).then((result) => {
-      const userRef = result.user;
-      setDoc(doc(db, "users", userRef.uid), {
-        uid: userRef.uid,
-        name: userRef.displayName,
-        email: userRef.email,
-        profilePic: userRef.photoURL,
-        folowers: [],
-        following: [],
-      });
-    });
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const userRef = result.user;
+        setDoc(doc(db, "users", userRef.uid), {
+          uid: userRef.uid,
+          name: userRef.displayName,
+          email: userRef.email,
+          profilePic: userRef.photoURL,
+          folowers: [],
+          following: [],
+        });
+      })
+      .then((window.location.href = "/home"));
   }
   //create a sign in button
   return (
