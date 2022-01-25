@@ -44,6 +44,7 @@ function Home(props) {
                 whileTap={{ scale: 0.95 }}
                 key={postRef.id}
               >
+         
                 <div className="flex justify-start items-center mt-10">
                   <img className="w-20" src={postRef.file} alt="loading" />
                   <div className="divider divider-vertical"></div>
