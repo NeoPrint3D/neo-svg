@@ -29,7 +29,7 @@ function Home(props) {
     <>
       {posts ? (
         <motion.div
-          className="grid grid-cols-2 bg-slate-900"
+          className="grid grid-cols-2"
           variants={container}
           initial="hidden"
           animate="visible"
