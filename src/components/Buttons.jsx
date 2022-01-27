@@ -6,25 +6,28 @@ import { setDoc, doc } from "firebase/firestore";
 function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const userRef = result.user;
-        setDoc(doc(db, "users", userRef.uid), {
-          uid: userRef.uid,
-          name: userRef.displayName,
-          email: userRef.email,
-          profilePic: userRef.photoURL,
-          folowers: [],
-          following: [],
-        });
-      })
-      .then((window.location.href = "/home"));
+    signInWithPopup(auth, provider).then((result) => {
+      const userRef = result.user;
+      console.log(userRef);
+
+      setDoc(doc(db, "users", userRef.uid), {
+        uid: userRef.uid,
+        username: userRef.displayName,
+        email: userRef.email,
+        profilePic: userRef.photoURL,
+        folowers: [],
+        following: [],
+        created: Date.now(),
+      }).then(() => {
+        window.location.href = "/";
+      });
+    });
   }
   //create a sign in button
   return (
     <div>
       <button
-        className="transition-all px-4 md:px-8 py-2 outline rounded hover:bg-purple-500 hover:scale-110"
+        className="transition-all px-2 md:px-8 py-2 outline rounded hover:bg-purple-500 hover:scale-110"
         onClick={signInWithGoogle}
       >
         <div className="flex justify-evenly items-center">
@@ -39,7 +42,10 @@ function SignIn() {
 //create a sign out button
 function SignOut() {
   return (
-    <button className="btn  btn-outline" onClick={() => signOut(auth)}>
+    <button className="btn  btn-outline" onClick={() => {
+      signOut(auth);
+      window.location.href = "/";
+    }}>
       Sign out
     </button>
   );

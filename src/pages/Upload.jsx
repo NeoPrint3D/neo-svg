@@ -40,11 +40,11 @@ function Upload(props) {
         const downloadURL = await getDownloadURL(fileRef);
         console.log("downloadURL", downloadURL);
         await setDoc(doc(db, "posts", ID), {
-          title,
+          title: title,
           id: ID,
-          description,
+          description: description,
           file: downloadURL,
-          createdAt: new Date(),
+          created: new Date(),
           likes: 0,
           views: 0,
           tags: [],

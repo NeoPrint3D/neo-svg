@@ -4,29 +4,24 @@ import { db } from "../utils/firebase";
 import { FaRegEdit } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 
-function Profile(props) {
+function Post(props) {
   const { id } = useParams();
   const { posts, currentUser } = props;
-  const [post, setPost] = useState('');
+  const [post, setPost] = useState("");
   const [owns, setOwns] = useState(false);
   useEffect(() => {
-    if (posts) {
+    if (posts && currentUser) {
       posts.docs.map((post) => {
         const postRef = post.data();
         if (postRef.id === id) {
-          if(postRef.user.uid === currentUser.uid) {
+          if (postRef.user.uid === currentUser.uid) {
             setOwns(true);
           }
-          setPost(postRef)
-
+          setPost(postRef);
         }
       });
     }
-    
-
-    
-  
-  }, [posts]);
+  }, [posts, currentUser, id]);
 
   return (
     <main className="glass w-3/4 h-5/6 rounded-2xl p-10">
@@ -59,4 +54,4 @@ function Profile(props) {
     </main>
   );
 }
-export default Profile;
+export default Post;

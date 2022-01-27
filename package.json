@@ -2,6 +2,7 @@
   "name": "neo-svg",
   "version": "0.0.0",
   "scripts": {
+    "data": "node posts.js",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

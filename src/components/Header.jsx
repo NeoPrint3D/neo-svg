@@ -1,10 +1,23 @@
 import { Link } from "react-router-dom";
 import { SignOut } from "./Buttons";
 import { BsUpload } from "react-icons/bs";
+import { useState, useEffect } from "react";
 function Header(props) {
   const { children, currentUser } = props;
+  const [show, setShow] = useState(false);
+  onscroll = () => {
+   {scrollY > 0 ? setShow(true) : setShow(false)}
+
+  };
+  useEffect(() => {
+    window.addEventListener("sticky", onscroll);
+    return () => {
+      window.removeEventListener("sticky", onscroll);
+    };
+  }, []);
+
   return (
-    <header className="bg-gray-900 h-16 grid grid-cols-3">
+    <header className="bg-gray-900 h-16 grid grid-cols-3 z-100">
       <div className="flex justify-start items-center ml-3">
         <Link to="/" className="text-xl font-logo">
           NeoSVG
@@ -34,7 +47,7 @@ function Header(props) {
                   <div className="flex justify-center items-center">
                     <div className="w-10 h-10 rounded-full bg-gray-700 border-4 border-purple-700">
                       <h1 className="text-xl text-center">
-                        {currentUser.name.charAt(0)}
+                        {currentUser.username.charAt(0)}
                       </h1>
                     </div>
                   </div>
@@ -52,7 +65,7 @@ function Header(props) {
             {currentUser ? (
               <li className="flex flex-col items-center  p-3 gap-5">
                 <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
-                  <Link to={`/user/${currentUser.name}`}>Profile</Link>
+                  <Link to={`/user/${currentUser.username}`}>Profile</Link>
                 </button>
                 <SignOut />
               </li>

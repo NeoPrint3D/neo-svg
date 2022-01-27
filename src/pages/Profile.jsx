@@ -10,12 +10,14 @@ function Profile(props) {
 
   //querys the data by username
   useEffect(() => {
-    if (users) {
-      setOwns(user.username === currentUser.username);
-      users.docs.forEach((doc) => {
-        if (doc.data().name === username) {
-          console.log(doc.data());
-          setUser(doc.data());
+    if (users && currentUser) {
+      users.docs.forEach((user) => {
+        const userRef = user.data();
+        if (userRef.username === username) {
+          console.log(userRef.username);
+          setUser(userRef);
+          setOwns(userRef.uid === currentUser.uid);
+          console.log(owns);
         }
       });
     }
@@ -28,8 +30,8 @@ function Profile(props) {
             <h1>Profile</h1>
           </div>
           <div className="flex flex-col justify-center">
-            <div className="flex justify-center">
-              <h5>{user.name}</h5>
+            <div className="flex justify-evenly">
+              <h5>{user.username}</h5>
               {owns ? <FaRegEdit size={30} /> : <div></div>}
             </div>
             {true && (
@@ -43,9 +45,13 @@ function Profile(props) {
                     alt="user"
                   />
                 ) : (
-                  <div className="flex justify-center items-center w-20 h-20 rounded-full bg-gray-700 border-4 border-purple-700">
+                  <div
+                    className={`flex justify-center items-center w-20 h-20 rounded-full bg-gray-700 border-4 ${
+                      owns ? "border-green-500" : "border-red-500"
+                    }`}
+                  >
                     <h1 className="text-3xl text-center">
-                      {`${user.name}`.charAt(0)}
+                      {`${user.username}`.charAt(0)}
                     </h1>
                   </div>
                 )}
