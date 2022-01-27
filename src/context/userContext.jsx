@@ -1,32 +1,35 @@
 import React, { createContext, useState } from "react";
-import { auth,db } from "../utils/firebase";
+import { auth, db } from "../utils/firebase";
 import { useEffect } from "react/cjs/react.development";
-import { getDoc,doc } from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 
-const UserContext = createContext(undefined);
-const UserDispatchContext = createContext(undefined);
+const CurrentUserContext = createContext(undefined);
+const CurrentUserDispatchContext = createContext(undefined);
 // A "provider" is used to encapsulate only the
 // components that needs the state in this context
-function UserProvider({ children }) {
-  const [userDetails, setUserDetails] = useState({});
+function CurrentUserProvider({ children }) {
+  const [currentUser, setCurrentUser] = useState({});
 
   useEffect(() => {
-    {
-      auth.currentUser
-        ? getDoc(doc(db, `users`, auth.currentUser.uid)).then((user) => {
-            setUserDetails(user.data());
-          })
-        : setUserDetails('');
-    }
+    getUser();
   }, [auth.currentUser]);
 
+  async function getUser() {
+    if (auth.currentUser) {
+      const userRef = await getDoc(doc(db, "users", auth.currentUser.uid));
+      setCurrentUser(userRef.data());
+    } else {
+      setCurrentUser({});
+    }
+  }
+
   return (
-    <UserContext.Provider value={userDetails}>
-      <UserDispatchContext.Provider value={setUserDetails}>
+    <CurrentUserContext.Provider value={currentUser}>
+      <CurrentUserDispatchContext.Provider value={setCurrentUser}>
         {children}
-      </UserDispatchContext.Provider>
-    </UserContext.Provider>
+      </CurrentUserDispatchContext.Provider>
+    </CurrentUserContext.Provider>
   );
 }
 
-export { UserProvider, UserContext, UserDispatchContext };
+export { CurrentUserProvider, CurrentUserContext, CurrentUserDispatchContext };

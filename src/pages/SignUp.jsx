@@ -1,4 +1,4 @@
-import { SignIn, SignOut } from "../components/Buttons";
+import { SignIn } from "../components/Buttons";
 import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { decrypt } from "../utils/encryption";
@@ -18,11 +18,7 @@ import {
 
 import {
   doc,
-  getDoc,
   setDoc,
-  query,
-  where,
-  collection,
 } from "firebase/firestore";
 
 function SignUpPage(props) {

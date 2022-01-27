@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { db, auth } from "./utils/firebase";
-import { doc, getDoc, collection } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import { Route, Routes } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useCollection } from "react-firebase-hooks/firestore";
 
 import { BiSearch } from "react-icons/bi";
 
@@ -14,101 +12,57 @@ import Profile from "./pages/Profile";
 import SignUpPage from "./pages/SignUp";
 import SignInPage from "./pages/SignIn";
 import Header from "./components/Header";
-import { UserProvider } from "./context/userContext";
+import { CurrentUserProvider } from "./context/userContext";
 import { SearchProvider } from "./context/searchContext";
 
-function Losts() {
-  const posts = {
-    docs: [],
-  };
-  for (let i = 0; i < 50; i++) {
-    const image = `https://picsum.photos/id/${i}/200/200`;
-    const letter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-    const views = Math.floor(Math.random() * 10000);
-    const title = `${letter}${i}`;
-    //caculate chance of like and download based on the view count
-    const chanceOfLike = Math.floor(Math.random() * views);
-    const chanceOfDownload = Math.floor(Math.random() * views);
-    const likes = Math.floor(0.3 * Math.random() * chanceOfLike);
-    const downloads = Math.floor(0.7 * Math.random() * chanceOfDownload);
-    posts.docs.push({
-      id: i,
-      title,
-      image: image,
-      likes,
-      downloads,
-      views,
-    });
-  }
-  // pick a random chance of how likey a post is to be liked or downloaded and push it to the array
-
-  //sort the array by the number of likes
-  posts.docs.sort(
-    (a, b) =>
-      0.15 * (b.likes / b.views - a.likes / a.views) +
-      0.55 * (b.downloads / b.views - a.downloads / a.views) +
-      0.1 * (b.views - a.views) +
-      0.2 * Math.random()
-  );
-
-  return posts;
-}
-
 function App() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [search, setSearch] = useState("");
   const [posts, setPosts] = useState("");
-  const [currentUser, setCurrentUser] = useState("");
-  const [users] = useCollection(collection(db, "users")); // const users = people;
-  const [postsRef] = useCollection(collection(db, "posts"));
+  const [users] = useState("");
+  // const [postsRef] = useCollection(collection(db, "posts"));
 
-  function sortPosts(posts, option) {
-    switch (option) {
-      case "magic":
-        return posts.docs.sort(
-          (a, b) =>
-            0.15 * (b.likes / b.views - a.likes / a.views) +
-            0.55 * (b.downloads / b.views - a.downloads / a.views) +
-            0.1 * (b.views - a.views) +
-            0.2 * Math.random()
+  function sortPosts(posts, sortBy) {
+    console.log(sortBy);
+    switch (sortBy) {
+      case "random":
+        return posts.sort((a, b) => 0.5 - Math.random());
+      case "newest":
+        return posts.sort(
+          (a, b) => b.createdAt.milliseconds - a.createdAt.milliseconds
         );
-
-      case "likes":
-        return posts.sort((a, b) => b.likes - a.likes);
-      case "downloads":
-        return posts.sort((a, b) => b.downloads - a.downloads);
-      case "views":
-        return posts.sort((a, b) => b.views - a.views);
+      case "oldest":
+        return posts.sort(
+          (a, b) => a.createdAt.milliseconds - b.createdAt.milliseconds
+        );
+      case "popular":
+        return posts.sort((a, b) => b.likeCount - a.likeCount);
       default:
         return posts;
     }
   }
+  function FormalizeData(posts) {
+    const list = [];
+    posts.docs.map((post) => {
+      list.push(post.data());
+    });
+    return list;
+  }
 
   useEffect(() => {
-    {
-      auth.currentUser
-        ? getDoc(doc(db, `users`, auth.currentUser.uid)).then((user) => {
-            setCurrentUser(user.data());
-          })
-        : setCurrentUser(null);
-    }
-  }, [auth.currentUser]);
-  useEffect(() => {
-    if (postsRef) {
-      console.log(postsRef);
-      setPosts(sortPosts(postsRef));
-    }
-  }, [postsRef]);
+    console.log("got posts");
+    getDocs(collection(db, "posts")).then((snapshot) => {
+      setPosts(FormalizeData(snapshot));
+    });
+  }, []);
   return (
     <div className="background">
-      <UserProvider>
+      <CurrentUserProvider>
         <SearchProvider>
-        <Header />
+          <Header />
           <div className="overflow-y-hidden">
             <Routes>
               <Route
                 path={"/"}
-                element={<Home users={users} posts={posts} />}
+                element={<Home posts={posts} users={users} />}
               />
 
               <Route path="/upload" element={<Upload />} />
@@ -122,7 +76,7 @@ function App() {
             </Routes>
           </div>
         </SearchProvider>
-      </UserProvider>
+      </CurrentUserProvider>
     </div>
   );
 }

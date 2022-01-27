@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useState, useEffect } from "react";
 // export default Card;
-function Card(props) {
-  const { user, currentUser } = props;
+function PreviewProfile(props) {
+  const { user } = props;
   const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
@@ -39,6 +39,7 @@ function Card(props) {
       setIsFollowing(!isFollowing);
     }
   }
+
 
   return (
     <div className="flex-col w-[15rem] h-[10rem] bg-slate-600 rounded-xl">

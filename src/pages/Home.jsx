@@ -2,15 +2,12 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "framer-motion";
 import PostCard from "../components/PreviewPost";
 import { useEffect, useContext } from "react";
-import { UserContext } from "../context/userContext";
+import { CurrentUserContext } from "../context/userContext";
 import { SearchContext } from "../context/searchContext";
 function Home(props) {
-  const { posts } = props;
-  const userDetails = useContext(UserContext);
+  const { posts, users } = props;
+  const currentUser = useContext(CurrentUserContext);
   const search = useContext(SearchContext);
-  useEffect(() => {
-    console.log(search);
-  }, [userDetails]);
 
   const container = {
     hidden: { opacity: 1, scale: 0 },
@@ -27,7 +24,7 @@ function Home(props) {
   return (
     <>
       <div>
-        {posts !== "" ? (
+        {posts ? (
           <div className="grid md:grid-cols-10">
             <div className="col-span-7">
               <div className="flex justify-center">{""}</div>
@@ -37,9 +34,8 @@ function Home(props) {
                 initial="hidden"
                 animate="visible"
               >
-                {posts.docs.map((post) => {
-                  const postRef = post.data();
-                  return <PostCard post={postRef} />;
+                {posts.map((post) => {
+                  return <PostCard key={post.id} post={post} />;
                 })}
               </motion.div>
             </div>
