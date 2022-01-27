@@ -1,11 +1,9 @@
 {
-    "version": "1.0.0",
-    "rewrites": [
-        {
-            "from": "/",
-            "to": "/index.html"
-        }
-    ]
-    
-
+  "version": "1.0.0",
+  "rewrites": [
+    {
+      "from": "/",
+      "to": "/index.html"
+    }
+  ]
 }

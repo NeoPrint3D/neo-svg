@@ -14,6 +14,8 @@ import Profile from "./pages/Profile";
 import SignUpPage from "./pages/SignUp";
 import SignInPage from "./pages/SignIn";
 import Header from "./components/Header";
+import { UserProvider } from "./context/userContext";
+import { SearchProvider } from "./context/searchContext";
 
 function Losts() {
   const posts = {
@@ -70,6 +72,7 @@ function App() {
             0.1 * (b.views - a.views) +
             0.2 * Math.random()
         );
+
       case "likes":
         return posts.sort((a, b) => b.likes - a.likes);
       case "downloads":
@@ -98,48 +101,28 @@ function App() {
   }, [postsRef]);
   return (
     <div className="background">
-      <Header
-        currentUser={currentUser}
-        children={
-          <div className="flex space-x-2">
-            <input
-              placeholder="Search"
-              className="w-full input input-primary input-bordered"
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="btn btn-primary" onClick={() => ""}>
-              <BiSearch size={30} />
-            </button>
-          </div>
-        }
-      />
-      <div className="overflow-y-hidden">
-        <Routes>
-          <Route
-            path={"/"}
-            element={
-              <Home currentUser={currentUser} users={users} posts={posts} />
-            }
-          />
+      <UserProvider>
+        <SearchProvider>
+        <Header />
+          <div className="overflow-y-hidden">
+            <Routes>
+              <Route
+                path={"/"}
+                element={<Home users={users} posts={posts} />}
+              />
 
-          <Route
-            path="/upload"
-            element={<Upload currentUser={currentUser} />}
-          />
-          <Route
-            path="/user/:username"
-            element={<Profile currentUser={currentUser} users={users} />}
-          />
-          <Route
-            path="/post/:id"
-            element={<Post currentUser={currentUser} posts={posts} />}
-          />
-          <Route path="/SignUp" element={<SignUpPage users={users} />} />
-          <Route path="/SignIn" element={<SignInPage users={users} />} />
-        </Routes>
-      </div>
+              <Route path="/upload" element={<Upload />} />
+              <Route
+                path="/user/:username"
+                element={<Profile users={users} />}
+              />
+              <Route path="/post/:id" element={<Post posts={posts} />} />
+              <Route path="/SignUp" element={<SignUpPage users={users} />} />
+              <Route path="/SignIn" element={<SignInPage users={users} />} />
+            </Routes>
+          </div>
+        </SearchProvider>
+      </UserProvider>
     </div>
   );
 }

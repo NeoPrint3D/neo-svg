@@ -1,53 +1,59 @@
 import { Link } from "react-router-dom";
 import { SignOut } from "./Buttons";
-import { BsUpload } from "react-icons/bs";
-import { useState, useEffect } from "react";
-function Header(props) {
-  const { children, currentUser } = props;
-  const [show, setShow] = useState(false);
-  onscroll = () => {
-   {scrollY > 0 ? setShow(true) : setShow(false)}
+import { BsSearch, BsUpload } from "react-icons/bs";
+import { useEffect, useContext, useState } from "react";
+import { UserContext } from "../context/userContext";
+import { SearchContext, SearchDispatchContext } from "../context/searchContext";
 
-  };
+function Header(props) {
+  const userDetails = useContext(UserContext);
+  const search = useContext(SearchContext);
+  const setSearch = useContext(SearchDispatchContext);
+
   useEffect(() => {
-    window.addEventListener("sticky", onscroll);
-    return () => {
-      window.removeEventListener("sticky", onscroll);
-    };
-  }, []);
+    console.log(search);
+  }, [search]);
 
   return (
-    <header className="bg-gray-900 h-16 grid grid-cols-3 z-100">
-      <div className="flex justify-start items-center ml-3">
+    <header className="bg-gray-900 h-16 grid grid-cols-10 z-100">
+      <div className="flex justify-start items-center ml-3 col-span-2">
         <Link to="/" className="text-xl font-logo">
           NeoSVG
         </Link>
       </div>
 
-      <div className="flex justify-center items-center">
-        <div className="form-control">{children}</div>
+      <div className="flex justify-center gap-5 items-center col-span-6">
+        <input
+          type="search"
+          className="input-field w-full bg-gray-900"
+          placeholder="Search"
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button className="" onClick={() => ""}>
+          <BsSearch size={30} />
+        </button>
       </div>
 
-      <div className="flex justify-end items-center mr-3 gap-5">
+      <div className="flex justify-end items-center mr-3 gap-5 col-span-2">
         <Link to="/upload">
           <BsUpload size={20} />
         </Link>
 
         <div className="dropdown dropdown-end">
           <div tabIndex="0">
-            {currentUser ? (
+            {userDetails ? (
               <div>
-                {currentUser.profilePic ? (
+                {userDetails.profilePic ? (
                   <img
                     className="w-10 h-10 rounded-full border-purple-700 border-4 "
-                    src={currentUser.profilePic}
+                    src={userDetails.profilePic}
                     alt="user"
                   />
                 ) : (
                   <div className="flex justify-center items-center">
                     <div className="w-10 h-10 rounded-full bg-gray-700 border-4 border-purple-700">
                       <h1 className="text-xl text-center">
-                        {currentUser.username.charAt(0)}
+                        {`${userDetails.username}`.charAt(0)}
                       </h1>
                     </div>
                   </div>
@@ -62,10 +68,10 @@ function Header(props) {
             tabIndex="0"
             className="dropdown-content bg-slate-800 w-52 rounded p-2 shadow-lg shadow-rose-900"
           >
-            {currentUser ? (
+            {userDetails ? (
               <li className="flex flex-col items-center  p-3 gap-5">
                 <button className="bg-purple-800 p-3 rounded-2xl hover:bg-purple-800 hover:ring ring-purple-500">
-                  <Link to={`/user/${currentUser.username}`}>Profile</Link>
+                  <Link to={`/user/${userDetails.username}`}>Profile</Link>
                 </button>
                 <SignOut />
               </li>

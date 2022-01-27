@@ -1,30 +1,30 @@
 import { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { useParams } from "react-router-dom";
+import { useContext } from "react";
+import {userContext} from '../context/userContext'
 
 function Profile(props) {
   const { username } = useParams();
-  const { currentUser, users } = props;
+  const { users } = props;
   const [owns, setOwns] = useState(false);
-  const [user, setUser] = useState({});
+  const currentUser = useContext(userContext);
+
+  useEffect(() => {
+    if (currentUser.user.username === username) {
+      setOwns(true);
+    }
+    else{
+      setOwns(false);
+    }
+  }, [currentUser]);
+
 
   //querys the data by username
-  useEffect(() => {
-    if (users && currentUser) {
-      users.docs.forEach((user) => {
-        const userRef = user.data();
-        if (userRef.username === username) {
-          console.log(userRef.username);
-          setUser(userRef);
-          setOwns(userRef.uid === currentUser.uid);
-          console.log(owns);
-        }
-      });
-    }
-  }, [currentUser, users]);
+
   return (
     <main className={`glass w-3/4 h-5/6 rounded-2xl p-10 `}>
-      {user ? (
+      {user && currentUser ? (
         <div className="flex flex-col justify-center">
           <div className="flex justify-center">
             <h1>Profile</h1>
@@ -34,7 +34,7 @@ function Profile(props) {
               <h5>{user.username}</h5>
               {owns ? <FaRegEdit size={30} /> : <div></div>}
             </div>
-            {true && (
+            {user && (
               <div className="flex justify-center">
                 {user.profilePic ? (
                   <img
@@ -51,7 +51,7 @@ function Profile(props) {
                     }`}
                   >
                     <h1 className="text-3xl text-center">
-                      {`${user.username}`.charAt(0)}
+                      {user && `${user.username}`.charAt(0)}
                     </h1>
                   </div>
                 )}
