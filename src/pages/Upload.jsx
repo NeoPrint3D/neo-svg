@@ -12,7 +12,7 @@ function Upload(props) {
   const [ID, setID] = useState("");
 
   useEffect(() => {
-    setID(id(8));
+    setID(id(16));
     console.log(ID);
   }, [progress]);
 

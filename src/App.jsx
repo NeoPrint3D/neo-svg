@@ -61,23 +61,21 @@ function App() {
           <Header />
 
           <div className="overflow-y-hidden">
-            <PostProvider>
-              <Routes>
-                <Route
-                  path={"/"}
-                  element={<Home posts={posts} users={users} />}
-                />
+            <Routes>
+              <Route
+                path={"/"}
+                element={<Home posts={posts} users={users} />}
+              />
 
-                <Route path="/upload" element={<Upload />} />
-                <Route
-                  path="/user/:username"
-                  element={<Profile users={users} />}
-                />
-                <Route path="/post/:id" element={<Post posts={posts} />} />
-                <Route path="/SignUp" element={<SignUpPage users={users} />} />
-                <Route path="/SignIn" element={<SignInPage users={users} />} />
-              </Routes>
-            </PostProvider>
+              <Route path="/upload" element={<Upload />} />
+              <Route
+                path="/user/:username"
+                element={<Profile users={users} />}
+              />
+              <Route path="/post/:id" element={<Post posts={posts} />} />
+              <Route path="/SignUp" element={<SignUpPage users={users} />} />
+              <Route path="/SignIn" element={<SignInPage users={users} />} />
+            </Routes>
           </div>
         </SearchProvider>
       </CurrentUserProvider>
