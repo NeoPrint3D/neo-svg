@@ -16,10 +16,7 @@ import {
   HiLockClosed,
 } from "react-icons/hi";
 
-import {
-  doc,
-  setDoc,
-} from "firebase/firestore";
+import { doc, setDoc, query, collection } from "firebase/firestore";
 
 function SignUpPage(props) {
   const { users } = props;
@@ -36,20 +33,11 @@ function SignUpPage(props) {
 
   const [modalOpen, setModalOpen] = useState(false);
 
-  const isVerified =
-    email.length > 0 &&
-    password.length >= 6 &&
-    passwordConfirm.length >= 6 &&
-    password === passwordConfirm &&
-    !isNameTaken &&
-    !isEmailTaken;
-
   async function CreateNewUser(e) {
     e.preventDefault();
     if (vfCode === vfCodeConfirm) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((user) => {
-          console.log(user.user);
           //see if user exists in db
           setDoc(doc(db, "users", user.user.uid), {
             created: Date.now(),
@@ -72,20 +60,12 @@ function SignUpPage(props) {
     }
   }
 
-  useEffect(() => {
-    //check if the username is already taken
-    if (users) {
-      users.forEach((user) => {
-        const userRef = user.data();
-        userRef.name === username ? setNameTaken(true) : setNameTaken(false);
-        userRef.email === email ? setEmailTaken(true) : setEmailTaken(false);
-      });
-    }
-  }, [users, username, email]);
-
   async function sendAuthCode(e) {
     e.preventDefault();
-    if (isVerified) {
+    const q = await query(collection(db, "users"), where("email", "==", email));
+    
+
+    if (doc.exist) {
       await axios
         .get(
           `https://np3demail.herokuapp.com/auth?email=${email}&api_key=${
