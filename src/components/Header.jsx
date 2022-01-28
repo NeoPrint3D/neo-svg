@@ -10,6 +10,10 @@ function Header() {
   const search = useContext(SearchContext);
   const setSearch = useContext(SearchDispatchContext);
 
+  useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
+
   return (
     <header className="bg-gray-900 h-16 grid grid-cols-10 z-100">
       <div className="flex justify-start items-center ml-3 col-span-2">
@@ -37,7 +41,7 @@ function Header() {
 
         <div className="dropdown dropdown-end">
           <div tabIndex="0">
-            {currentUser.uid ? (
+            {currentUser ? (
               <div>
                 {currentUser.profilePic ? (
                   <img

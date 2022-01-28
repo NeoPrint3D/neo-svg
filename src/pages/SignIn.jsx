@@ -34,7 +34,7 @@ function SignInPage() {
                 </div>
                 <Input
                   icon={<HiOutlineMailOpen size={20} />}
-                  type={"text"}
+                  type={"email"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   badge={"badge-info"}
@@ -42,7 +42,7 @@ function SignInPage() {
                 />
                 <Input
                   icon={<HiOutlineKey size={20} />}
-                  type={"password"}
+                  type={"current-password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   badge={"badge-warning"}

@@ -2,14 +2,11 @@ import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { db, auth } from "../utils/firebase";
 import { FcGoogle } from "react-icons/fc";
 import { setDoc, doc } from "firebase/firestore";
-
 function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider).then((result) => {
       const userRef = result.user;
-      console.log(userRef);
-
       setDoc(doc(db, "users", userRef.uid), {
         uid: userRef.uid,
         username: userRef.displayName,
@@ -42,10 +39,13 @@ function SignIn() {
 //create a sign out button
 function SignOut() {
   return (
-    <button className="btn  btn-outline" onClick={() => {
-      signOut(auth);
-      window.location.href = "/";
-    }}>
+    <button
+      className="btn  btn-outline"
+      onClick={() => {
+        signOut(auth);
+        window.location.href = "/";
+      }}
+    >
       Sign out
     </button>
   );

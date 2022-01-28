@@ -24,6 +24,7 @@ function Input(props) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        autoComplete="on"
       />
     </div>
   );

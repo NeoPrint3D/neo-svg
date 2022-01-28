@@ -4,10 +4,13 @@ import PostCard from "../components/PreviewPost";
 import { useEffect, useContext } from "react";
 import { CurrentUserContext } from "../context/userContext";
 import { SearchContext } from "../context/searchContext";
+import { PostsContext } from "../context/postsContext";
 function Home(props) {
-  const { posts, users } = props;
+  const { users } = props;
   const currentUser = useContext(CurrentUserContext);
   const search = useContext(SearchContext);
+  const posts = useContext(PostsContext);
+  console.log(posts);
 
   const container = {
     hidden: { opacity: 1, scale: 0 },

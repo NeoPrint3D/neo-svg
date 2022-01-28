@@ -8,20 +8,19 @@ const CurrentUserDispatchContext = createContext(undefined);
 // A "provider" is used to encapsulate only the
 // components that needs the state in this context
 function CurrentUserProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState("");
 
   useEffect(() => {
-    getUser();
-  }, [auth.currentUser]);
-
-  async function getUser() {
-    if (auth.currentUser) {
-      const userRef = await getDoc(doc(db, "users", auth.currentUser.uid));
-      setCurrentUser(userRef.data());
-    } else {
-      setCurrentUser({});
-    }
-  }
+    //get the current user from firebase auth and set it to the state of the dayabase with the same id
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log("got user");
+        getDoc(doc(db, "users/" + user.uid)).then((snapshot) => {
+          setCurrentUser(snapshot.data());
+        });
+      }
+    });
+  }, []);
 
   return (
     <CurrentUserContext.Provider value={currentUser}>

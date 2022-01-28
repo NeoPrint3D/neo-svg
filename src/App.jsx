@@ -14,6 +14,7 @@ import SignInPage from "./pages/SignIn";
 import Header from "./components/Header";
 import { CurrentUserProvider } from "./context/userContext";
 import { SearchProvider } from "./context/searchContext";
+import { PostProvider } from "./context/postsContext";
 
 function App() {
   const [posts, setPosts] = useState("");
@@ -58,22 +59,25 @@ function App() {
       <CurrentUserProvider>
         <SearchProvider>
           <Header />
-          <div className="overflow-y-hidden">
-            <Routes>
-              <Route
-                path={"/"}
-                element={<Home posts={posts} users={users} />}
-              />
 
-              <Route path="/upload" element={<Upload />} />
-              <Route
-                path="/user/:username"
-                element={<Profile users={users} />}
-              />
-              <Route path="/post/:id" element={<Post posts={posts} />} />
-              <Route path="/SignUp" element={<SignUpPage users={users} />} />
-              <Route path="/SignIn" element={<SignInPage users={users} />} />
-            </Routes>
+          <div className="overflow-y-hidden">
+            <PostProvider>
+              <Routes>
+                <Route
+                  path={"/"}
+                  element={<Home posts={posts} users={users} />}
+                />
+
+                <Route path="/upload" element={<Upload />} />
+                <Route
+                  path="/user/:username"
+                  element={<Profile users={users} />}
+                />
+                <Route path="/post/:id" element={<Post posts={posts} />} />
+                <Route path="/SignUp" element={<SignUpPage users={users} />} />
+                <Route path="/SignIn" element={<SignInPage users={users} />} />
+              </Routes>
+            </PostProvider>
           </div>
         </SearchProvider>
       </CurrentUserProvider>

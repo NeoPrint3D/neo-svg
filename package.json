@@ -1,8 +1,10 @@
 {
   "name": "neo-svg",
   "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "data": "node posts.js",
+    "data": "node data.js",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -13,7 +15,6 @@
     "crypto-js": "^4.1.1",
     "daisyui": "^1.19.0",
     "firebase": "^9.6.1",
-    "firebase-tools": "^10.1.0",
     "framer-motion": "^6.2.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.7",
     "autoprefixer": "^10.4.0",
+    "chance": "^1.1.8",
     "postcss": "^8.4.4",
     "tailwindcss": "^3.0.0",
     "vite": "^2.7.0"
