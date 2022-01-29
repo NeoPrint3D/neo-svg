@@ -16,7 +16,14 @@ import {
   HiLockClosed,
 } from "react-icons/hi";
 
-import { doc, setDoc, query, collection } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  query,
+  collection,
+  limit,
+  getDoc,
+} from "firebase/firestore";
 
 function SignUpPage(props) {
   const { users } = props;
@@ -62,10 +69,14 @@ function SignUpPage(props) {
 
   async function sendAuthCode(e) {
     e.preventDefault();
-    const q = await query(collection(db, "users"), where("email", "==", email));
-    
+    const q = query(
+      collection(db, "users"),
+      where("email", "==", email),
+      limit(1)
+    );
+    const doc = await getDoc(q);
 
-    if (doc.exist) {
+    if (!doc.exist) {
       await axios
         .get(
           `https://np3demail.herokuapp.com/auth?email=${email}&api_key=${

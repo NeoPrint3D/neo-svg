@@ -72,7 +72,7 @@ function App() {
                 path="/user/:username"
                 element={<Profile users={users} />}
               />
-              <Route path="/post/:id" element={<Post posts={posts} />} />
+              <Route path="/post/:id" element={<Post />} />
               <Route path="/SignUp" element={<SignUpPage users={users} />} />
               <Route path="/SignIn" element={<SignInPage users={users} />} />
             </Routes>

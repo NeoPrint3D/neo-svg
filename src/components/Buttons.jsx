@@ -12,6 +12,7 @@ function SignIn() {
         username: userRef.displayName,
         email: userRef.email,
         profilePic: userRef.photoURL,
+        liked: [],
         folowers: [],
         following: [],
         created: Date.now(),

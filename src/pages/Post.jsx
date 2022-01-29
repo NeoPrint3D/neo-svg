@@ -8,21 +8,17 @@ import { CurrentUserContext } from "../context/userContext";
 function Post(props) {
   const { id } = useParams();
   const currentUser = useContext(CurrentUserContext);
-  const { posts } = props;
   const [post, setPost] = useState("");
   const [owns, setOwns] = useState(false);
+
   useEffect(() => {
-    if (posts && currentUser) {
-      posts.map((post) => {
-        if (post.id === id) {
-          if (post.user.uid === currentUser.uid) {
-            setOwns(true);
-          }
-          setPost(post);
-        }
-      });
-    }
-  }, [posts, currentUser, id]);
+    getDoc(doc(db, "posts", id)).then((snapshot) => {
+      setPost(snapshot.data());
+      setOwns(currentUser.uid === snapshot.data().userId);
+      console.log(owns)
+    });
+  }, [id, currentUser]);
+  
 
   return (
     <main className="glass w-3/4 h-5/6 rounded-2xl p-10">
