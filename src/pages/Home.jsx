@@ -1,11 +1,10 @@
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "framer-motion";
-import PostCard from "../components/PreviewPost";
+import PreviewPost from "../components/PreviewPost";
 import { useEffect, useContext, useState } from "react";
 import { db } from "../utils/firebase";
-import { CurrentUserContext } from "../context/userContext";
 import { SearchContext } from "../context/searchContext";
-import { Routes, Route, Link } from "react-router-dom";
+
 import {
   doc,
   setDoc,
@@ -18,15 +17,13 @@ import {
 } from "firebase/firestore";
 import { uid as ID } from "uid";
 import Chance from "chance";
-import { async } from "@firebase/util";
 function Home(props) {
-  const [pageSize, setPageSize] = useState(8);
-  const [posts, setPosts] = useState([]);
-  const [postRef, setPostRef] = useState([]);
-  const [pageMax, setPageMax] = useState("");
+  const [pageSize, setPageSize] = useState(40);
+  const [posts, setPosts] = useState("");
+  const [postRef, setPostRef] = useState("");
   const [page, setPage] = useState(1);
-  const [sortBy, setSortBy] = useState("views");
-  const currentUser = useContext(CurrentUserContext);
+  const [endPage, setEndPage] = useState("");
+  const [sortBy, setSortBy] = useState("likeCount");
   const search = useContext(SearchContext);
 
   const formalizeData = (list) => {
@@ -42,17 +39,18 @@ function Home(props) {
 
     for (let i = 1; i <= 80; i++) {
       //grab a random picture from unsplash
-      const image =
-        "https://source.unsplash.com/random/800x600" +
-        Math.floor(Math.random() * 1000);
+      const image = "https://picsum.photos/200/300?random=" + i;
       const id = ID(24);
       await setDoc(doc(db, "posts", id), {
         title: chance.word(),
         name: chance.name({ middle: true }),
         id: id,
-        likes: [],
-        views: [],
-        downloads: [],
+        likeCount: 0,
+        likedBy: [],
+        viewCount: 0,
+        viewedBy: [],
+        downloadCount: 0,
+        downloadedBy: [],
         image: image,
       });
     }
@@ -63,12 +61,11 @@ function Home(props) {
   useEffect(() => {
     //update when the data is changed and clean up when the component is unmounted
     console.log("got posts");
-    getDocs(
-      query(collection(db, "posts"), limit(pageSize), orderBy(sortBy))
-    ).then((snapshot) => {
+    getPosts().then((snapshot) => {
+      setPostRef(snapshot);
       setPosts(formalizeData(snapshot));
     });
-  }, []);
+  }, [sortBy]);
 
   async function getPosts() {
     const first = query(
@@ -77,13 +74,19 @@ function Home(props) {
       orderBy(sortBy, "desc")
     );
     const documentSnapshots = await getDocs(first);
+    if (documentSnapshots.docs.length + 1 < pageSize) {
+      setEndPage(page);
+    }
+
     return documentSnapshots;
   }
 
   async function getMorePosts() {
-    setPageMax(page + 1);
     setPage(page + 1);
-    if (page * pageSize >= posts.length) {
+    if (
+      page * pageSize >= posts.length - 6 &&
+      postRef.docs.length % pageSize === 0
+    ) {
       const newPosts = await getDocs(
         query(
           collection(db, "posts"),
@@ -92,15 +95,14 @@ function Home(props) {
           startAt(postRef.docs[postRef.docs.length - 1])
         )
       );
-      console.log(formalizeData(newPosts).length);
       setPosts(posts.concat(formalizeData(newPosts)));
       setPostRef(newPosts);
+      if (newPosts.docs.length + 1 < pageSize) {
+        setEndPage(page + 1);
+        console.log("end page");
+      }
     }
   }
-
-  useEffect(() => {
-    console.log("post length", posts.length);
-  }, [posts]);
 
   const container = {
     hidden: { opacity: 1, scale: 0.5 },
@@ -115,28 +117,12 @@ function Home(props) {
   };
 
   return (
-    <>
-      <div>
-        <button onClick={() => generateData()}>new data</button>
-        <div className="flex justify-center items-center h-10">
-          <select
-            name="test"
-            defaultValue="views"
-            className="bg-gray-500 rounded-md"
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option disabled="disabled" selected="selected">
-              Sort By
-            </option>
-            <option value="likes">likes</option>
-            <option value="views">views</option>
-            <option value="downloads">downloads</option>
-            <option value="id">title</option>
-          </select>
-        </div>
-        {posts && (
+    <div className="my-10">
+      {/* <button onClick={() => generateData()}>new data</button> */}
+      {posts ? (
+        <>
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 carousel carousel-vertical h-[calc(100vh-9rem)] gap-5"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-[calc(100vh-6.5rem)] gap-5  "
             variants={container}
             initial="hidden"
             animate="visible"
@@ -148,21 +134,43 @@ function Home(props) {
                 index < page * pageSize &&
                 index >= page * pageSize - pageSize
               ) {
-                return <PostCard key={post.id} post={post} />;
+                return <PreviewPost key={post.id} post={post} />;
               }
             })}
+            <div
+              className={`grid grid-cols-3 items-center col-span-full h-[4rem]	text-4xl`}
+            >
+              {page > 1 ? (
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => {
+                      setPage(page - 1);
+                    }}
+                  >{`<`}</button>
+                </div>
+              ) : (
+                <div></div>
+              )}
+              <div className="flex justify-center">{page}</div>
+              <div className="flex justify-center">
+                <button
+                  className="disabled:text-red-500"
+                  disabled={endPage === page && true}
+                  onClick={() => getMorePosts(postRef)}
+                >{`>`}</button>
+              </div>
+            </div>
           </motion.div>
-        )}
-        <div className="grid grid-cols-2 text-4xl bg-red-700">
-          {page > 1 ? (
-            <button onClick={() => setPage(page - 1)}>{`<`}</button>
-          ) : (
-            <Link to="cool"></Link>
-          )}
-          <button onClick={() => getMorePosts(postRef)}>{`>`}</button>
+        </>
+      ) : (
+        <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
+          <AiOutlineLoading3Quarters
+            size={100}
+            className="text-purple-800 animate-spin"
+          />
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 

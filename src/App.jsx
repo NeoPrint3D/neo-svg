@@ -14,67 +14,23 @@ import SignInPage from "./pages/SignIn";
 import Header from "./components/Header";
 import { CurrentUserProvider } from "./context/userContext";
 import { SearchProvider } from "./context/searchContext";
-import { PostProvider } from "./context/postsContext";
 
 function App() {
-  const [posts, setPosts] = useState("");
-  const [users] = useState("");
-  // const [postsRef] = useCollection(collection(db, "posts"));
-
-  function sortPosts(posts, sortBy) {
-    console.log(sortBy);
-    switch (sortBy) {
-      case "random":
-        return posts.sort((a, b) => 0.5 - Math.random());
-      case "newest":
-        return posts.sort(
-          (a, b) => b.createdAt.milliseconds - a.createdAt.milliseconds
-        );
-      case "oldest":
-        return posts.sort(
-          (a, b) => a.createdAt.milliseconds - b.createdAt.milliseconds
-        );
-      case "popular":
-        return posts.sort((a, b) => b.likeCount - a.likeCount);
-      default:
-        return posts;
-    }
-  }
-  function FormalizeData(posts) {
-    const list = [];
-    posts.docs.map((post) => {
-      list.push(post.data());
-    });
-    return list;
-  }
-
-  useEffect(() => {
-    console.log("got posts");
-    getDocs(collection(db, "posts")).then((snapshot) => {
-      setPosts(FormalizeData(snapshot));
-    });
-  }, []);
   return (
-    <div className="background">
+    <div className="background h-screen overflow-y-scroll">
       <CurrentUserProvider>
         <SearchProvider>
           <Header />
 
-          <div className="overflow-y-hidden">
+          <div className="">
             <Routes>
-              <Route
-                path={"/"}
-                element={<Home posts={posts} users={users} />}
-              />
+              <Route path={"/"} element={<Home />} />
 
               <Route path="/upload" element={<Upload />} />
-              <Route
-                path="/user/:username"
-                element={<Profile users={users} />}
-              />
+              <Route path="/user/:username" element={<Profile />} />
               <Route path="/post/:id" element={<Post />} />
-              <Route path="/SignUp" element={<SignUpPage users={users} />} />
-              <Route path="/SignIn" element={<SignInPage users={users} />} />
+              <Route path="/SignUp" element={<SignUpPage />} />
+              <Route path="/SignIn" element={<SignInPage />} />
             </Routes>
           </div>
         </SearchProvider>

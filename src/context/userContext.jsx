@@ -1,6 +1,5 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState,useEffect } from "react";
 import { auth, db } from "../utils/firebase";
-import { useEffect } from "react/cjs/react.development";
 import { getDoc, doc } from "firebase/firestore";
 
 const CurrentUserContext = createContext(undefined);

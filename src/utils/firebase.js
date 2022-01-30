@@ -16,13 +16,13 @@ import { getStorage } from "firebase/storage";
 //     measurementId: import.meta.env.VITE_MESG_ID,
 // };
 const firebaseConfig = {
-    apiKey: "AIzaSyDv8FDcf0XA7ldxxHhE9-JcwJuCox8MA_8",
-    authDomain: "infernopatato.firebaseapp.com",
-    projectId: "infernopatato",
-    storageBucket: "infernopatato.appspot.com",
-    messagingSenderId: "804791169875",
-    appId: "1:804791169875:web:7f577f383824faec5367a6",
-    measurementId: "G-LJDC157KXW"
+    apiKey: "AIzaSyDDePXHbBtbNCMRnL3MxrmmZshmbIdJRJ8",
+    authDomain: "neo-svg.firebaseapp.com",
+    projectId: "neo-svg",
+    storageBucket: "neo-svg.appspot.com",
+    messagingSenderId: "132237395516",
+    appId: "1:132237395516:web:8a8ff8f287effbc244a539",
+    measurementId: "G-QXHBZZTQWX"
 };
 //intialize firebase app
 

@@ -13,37 +13,42 @@ import { doc, updateDoc } from "firebase/firestore";
 function PostCard(props) {
   const { post } = props;
   const currentUser = useContext(CurrentUserContext);
-
-  //see if a person has liked a post
   const [liked, setLiked] = useState(false);
-  useEffect(() => {
-    //determine if the current user is following the user
-    if (currentUser) {
-      if (post.likes.includes(currentUser.uid)) {
-        setLiked(true);
-      } else {
-        setLiked(false);
-      }
-    }
-  }, [currentUser, post]);
+  const [likes, setLikes] = useState("");
 
-  async function toggleLike() {
-    if (currentUser) {
-      //append the current user id to the likes array
-      if (!liked) {
-        await updateDoc(doc(db, "posts", post.id), {
-          likes: [...post.likes, currentUser.uid],
-        });
-        setLiked(true);
-      } else {
-        //remove the current user id from the likes array
-        await updateDoc(doc(db, "posts", post.id), {
-          likes: post.likes.filter((id) => id !== currentUser.uid),
-        });
-        setLiked(false);
-      }
+  useEffect(() => {
+    setLikes(post.likeCount);
+    if (post.likedBy.includes(currentUser.uid)) {
+      setLiked(true);
+    } else {
+      setLiked(false);
     }
-  }
+  }, [currentUser]);
+
+  const handleLike = async () => {
+    if (currentUser) {
+      if (liked) {
+        setLikes(likes - 1);
+        await updateDoc(doc(db, "posts", post.id), {
+          likedBy: post.likedBy.filter((id) => id !== currentUser.uid),
+          likeCount: likes - 1,
+        });
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          liked: currentUser.liked.filter((id) => id !== post.id),
+        });
+      } else {
+        setLikes(likes + 1);
+        await updateDoc(doc(db, "posts", post.id), {
+          likedBy: [...post.likedBy, currentUser.uid],
+          likeCount: likes + 1,
+        });
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          liked: [...currentUser.liked, post.id],
+        });
+      }
+      setLiked(!liked);
+    }
+  };
 
   //see if a person has downloaded a post
 
@@ -56,43 +61,64 @@ function PostCard(props) {
   };
   return (
     <motion.div
-      className="carousel-item grid grid-rows-10 justify-self-center bg-slate-600 rounded-lg p-3 carousel-item w-10/12 max-w-[20rem] shadow-md shadow-purple-900 gap-3 max-h-[15rem]"
+      className="glass-container rounded-2xl h-[20rem] grid grid-rows-5 "
       variants={item}
       key={post.id}
     >
-      <div className="flex flex-col justify-items-center row-span-2">
-        <h5 className="text-xl text-center">{post.title}</h5>
-        {/* <h1 className="text-xs text-center text-blue-500">{post.user.name}</h1> */}
+      <div className="grid grid-cols-3 items-center mt-2 ">
+        <div className="flex justify-start ml-2">
+          <Link to={`/user/${post.user.name}`}>
+            <img
+              className="flex h-16 rounded-full  border-4 border-purple-500"
+              src={post.user.profilePic}
+              alt=""
+            />
+          </Link>
+        </div>
+        <div className="flex flex-col items-center">
+          <h4 className="text-3xl">{post.title}</h4>
+
+          <h3 className="text-sm ">{post.user.name}</h3>
+        </div>
       </div>
-      <Link
-        className="flex justify-center items-center row-span-6"
-        to={`/post/${post.id}`}
-      >
-        <img
-          className="transition-all w-3/4 rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 max-h-[10rem]"
-          src={post.image}
-          alt="loading"
-        />
-      </Link>
+
+      <div className="flex justify-center items-center row-span-3">
+        <Link to={`/post/${post.id}`}>
+          <img
+            className="transition-all h-40 rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
+            src={post.file}
+            alt="loading"
+          />
+        </Link>
+      </div>
 
       <div className="grid grid-cols-3">
         <div className="flex justify-evenly items-center">
           <AiOutlineEye className="text-blue-500" size={30} />
-          <h1 className="text-xl text-center">{post.views.length}</h1>
+          <h1 className="text-xl text-center">{post.viewCount}</h1>
         </div>
         <div className="flex justify-evenly items-center">
-          <button onClick={()=>toggleLike()}>
+          <button
+            disabled={currentUser.uid === post.user.uid}
+            onClick={() => handleLike()}
+          >
             <AiOutlineLike
-              className="text-blue-500 hover:text-green-600 hover:scale-110"
+              className={`transition-all    ${
+                liked ? "text-green-600" : "text-blue-500"
+              }${
+                currentUser.uid === post.user.uid || !currentUser.uid
+                  ? " text-gray-500"
+                  : " text-blue-500 hover:scale-110"
+              }`}
               size={30}
             />
           </button>
-          <h1 className="text-xl text-center">{post.likes.length}</h1>
+          <h1 className="text-xl text-center">{likes}</h1>
         </div>
 
         <div className="flex justify-evenly items-center">
           <AiOutlineArrowDown className="text-blue-500" size={30} />
-          <h1 className="text-xl text-center">{post.downloads}</h1>
+          <h1 className="text-xl text-center">{post.downloadCount}</h1>
         </div>
       </div>
     </motion.div>

@@ -1,10 +1,12 @@
 import { db, storage } from "../utils/firebase";
 import { setDoc, doc } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { uid as id } from "uid";
-function Upload(props) {
-  const { currentUser } = props;
+import { CurrentUserContext } from "../context/userContext";
+function Upload() {
+  const currentUser = useContext(CurrentUserContext);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
@@ -19,7 +21,7 @@ function Upload(props) {
   async function handleSubmit(e) {
     e.preventDefault();
     console.log(currentUser);
-    const fileRef = ref(storage, `/posts/${currentUser.uid}-${file.name}`);
+    const fileRef = ref(storage, `/posts/${currentUser.uid}-${title}`);
     const uploadTask = uploadBytesResumable(fileRef, file);
     uploadTask.on(
       "state_changed",
@@ -38,20 +40,23 @@ function Upload(props) {
       },
       async () => {
         const downloadURL = await getDownloadURL(fileRef);
-        console.log("downloadURL", downloadURL);
         await setDoc(doc(db, "posts", ID), {
           title: title,
           id: ID,
           description: description,
           file: downloadURL,
           created: new Date(),
-          likes: 0,
-          views: 0,
+          likeCount: 0,
+          likedBy: [],
+          viewCount: 0,
+          viewedBy: [],
+          downloadCount: 0,
+          downloadedBy: [],
           tags: [],
           comments: [],
           user: {
             uid: currentUser.uid,
-            name: currentUser.name,
+            name: currentUser.username,
             profilePic: currentUser.profilePic,
           },
         });

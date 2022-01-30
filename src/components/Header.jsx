@@ -1,21 +1,24 @@
 import { Link } from "react-router-dom";
 import { SignOut } from "./Buttons";
 import { BsSearch, BsUpload } from "react-icons/bs";
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { CurrentUserContext } from "../context/userContext";
 import { SearchContext, SearchDispatchContext } from "../context/searchContext";
+
+import { useViewportScroll } from "framer-motion";
 
 function Header() {
   const currentUser = useContext(CurrentUserContext);
   const search = useContext(SearchContext);
   const setSearch = useContext(SearchDispatchContext);
 
+  //function that make sure when the user scrolls down the header is fixed
   useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
+   console.log(window.scrollY);
+  }, [window.scrollY]);
 
   return (
-    <header className="bg-gray-900 h-16 grid grid-cols-10 z-100">
+    <header className={`bg-gray-900 h-16  grid-cols-10 grid `}>
       <div className="flex justify-start items-center ml-3 col-span-2">
         <Link to="/" className="text-xl font-logo">
           NeoSVG

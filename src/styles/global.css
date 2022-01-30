@@ -7,8 +7,7 @@
   font-family: "Pushster", sans-serif;
 }
 .background {
-  @apply bg-fixed
-   bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500;
+  @apply bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500;
 }
 
 .form-layout {
@@ -23,12 +22,13 @@ main {
   @apply flex items-center justify-center h-[calc(100vh-4rem)];
 }
 
-.sticky {
-  @apply top-0 left-0 right-0 z-50;
+.hide {
+  @apply hidden;
 }
 
-.emphasis {
-  border-radius: 40px;
-  background: #96227d;
-  box-shadow: 35px 35px 70px #3c0e32, -35px -35px 70px #f036c8;
+.glass-container {
+  background: rgba(124, 31, 239, 0.4);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+  border: 1px solid rgba(124, 31, 239, 0.2);
 }

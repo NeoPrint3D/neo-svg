@@ -3,6 +3,7 @@ import { db } from "../utils/firebase";
 import { getDocs, collection } from "firebase/firestore";
 
 const PostsContext = createContext(undefined);
+const PostsDispatchContext = createContext(undefined);
 // A "provider" is used to encapsulate only the
 // components that needs the state in this context
 function PostProvider({ children }) {
