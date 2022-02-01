@@ -1,7 +1,7 @@
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { db, auth } from "../utils/firebase";
 import { FcGoogle } from "react-icons/fc";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore/lite";
 function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();

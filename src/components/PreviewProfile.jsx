@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore/lite";
 import { Link } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useState, useEffect } from "react";

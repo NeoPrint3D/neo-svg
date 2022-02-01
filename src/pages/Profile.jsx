@@ -4,14 +4,13 @@ import { db } from "../utils/firebase";
 import { CurrentUserContext } from "../context/userContext";
 import {
   collection,
-  doc,
   getDocs,
+  limit,
   query,
   where,
-  limit,
-} from "firebase/firestore";
+} from "firebase/firestore/lite";
 
-function Profile(props) {
+function Profile() {
   const { username } = useParams();
   const currentUser = useContext(CurrentUserContext);
   const [user, setUser] = useState(null);
@@ -23,12 +22,11 @@ function Profile(props) {
   async function getUser() {
     const q = query(
       collection(db, "users"),
-      where("username", "==", username)
+      where("username", "==", username),
+      limit(1)
     );
-    await getDocs(q).then((users) => {
-      console.log(users.docs[0].data());
-      setUser(users.docs[0].data());
-    });
+    const user = await getDocs(q);
+    setUser(user.docs[0].data());
   }
 
   //querys the data by username

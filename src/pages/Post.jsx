@@ -1,9 +1,8 @@
-import { getDoc, doc } from "firebase/firestore";
-import { db, storage } from "../utils/firebase";
+import { getDoc, doc } from "firebase/firestore/lite";
+import { db } from "../utils/firebase";
 import { useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { CurrentUserContext } from "../context/userContext";
-import { ref, getDownloadURL, getBlob } from "firebase/storage";
 
 function Post() {
   const { id } = useParams();
@@ -20,8 +19,7 @@ function Post() {
   }, [id, currentUser]);
 
   function getDownload() {
-    //fetch the image from firebase storage and return it as a blob
-   fetch(post.file)
+    fetch(post.file)
       .then((response) => response.blob())
       .then((blob) => {
         const url = URL.createObjectURL(blob);
@@ -29,20 +27,19 @@ function Post() {
         a.href = url;
         a.download = `${post.title}.svg`;
         a.click();
-      }
-      );
-
-
+      });
   }
   return (
     <main>
-      <div>
-        <h1>{post.title}</h1>
-        <p>{post.description}</p>
-        <p>{post.s}</p>
-        <img id="image" className="h-20" src={post.file} />
-        <button onClick={() => getDownload()}>download</button>
-      </div>
+      {post && (
+        <div>
+          <h1>{post.title}</h1>
+          <p>{post.description}</p>
+          <p>{post.s}</p>
+          <img id="image" className="h-20" src={post.file} />
+          <button onClick={() => getDownload()}>download</button>
+        </div>
+      )}
     </main>
   );
 }

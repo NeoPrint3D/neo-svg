@@ -1,8 +1,7 @@
 import { SignIn } from "../components/Buttons";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { decrypt } from "../utils/encryption";
-import axios from "axios";
 import { db, auth } from "../utils/firebase";
 import EaseIn from "../components/EaseIn";
 import Input from "../components/Input";
@@ -15,20 +14,17 @@ import {
   HiOutlineMailOpen,
   HiLockClosed,
 } from "react-icons/hi";
-
 import {
-  doc,
-  setDoc,
-  query,
   collection,
+  getDocs,
   limit,
-  getDoc,
-} from "firebase/firestore";
+  query,
+  where,
+} from "firebase/firestore/lite";
 
-function SignUpPage(props) {
-  const { users } = props;
-  const [username, setUsername] = useState("");
+function SignUpPage() {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
@@ -40,12 +36,14 @@ function SignUpPage(props) {
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  const isVerified =
+    email.length > 0 && password.length >= 6 && password === passwordConfirm;
+
   async function CreateNewUser(e) {
     e.preventDefault();
     if (vfCode === vfCodeConfirm) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((user) => {
-          //see if user exists in db
           setDoc(doc(db, "users", user.user.uid), {
             created: Date.now(),
             uid: user.user.uid,
@@ -58,7 +56,6 @@ function SignUpPage(props) {
             window.location.href = "/";
           });
         })
-
         .catch((error) => {
           alert(error.message);
         });
@@ -69,27 +66,36 @@ function SignUpPage(props) {
 
   async function sendAuthCode(e) {
     e.preventDefault();
-    const q = query(
+    const url = `https://np3demail.herokuapp.com/auth?email=${email}&api_key=${
+      import.meta.env.VITE_API_MAIL_KEY
+    }`;
+    const q1 = query(
+      collection(db, "users"),
+      where("username", "==", username),
+      limit(1)
+    );
+    const q2 = query(
       collection(db, "users"),
       where("email", "==", email),
       limit(1)
     );
-    const doc = await getDoc(q);
+    await getDocs(q1).then((user) => {
+      setNameTaken(user.docs.length > 0);
+    });
 
-    if (!doc.exist) {
-      await axios
-        .get(
-          `https://np3demail.herokuapp.com/auth?email=${email}&api_key=${
-            import.meta.env.VITE_API_MAIL_KEY
-          }`
-        )
+    await getDocs(q2).then((user) => {
+      setEmailTaken(user.docs.length > 0);
+    });
+
+    if (isEmailTaken || isNameTaken) {
+      alert("Username or email is already taken");
+    } else {
+      await fetch(url)
         .then((res) => {
-          const resRef = res.data;
-          setVfCode(decrypt(resRef.data, import.meta.env.VITE_HASH_KEY));
-          setModalOpen(true);
+          return res.json();
         })
-        .catch((err) => {
-          alert(err);
+        .then((data) => {
+          setVfCode(decrypt(data.data, import.meta.env.VITE_HASH_KEY));
         });
     }
   }

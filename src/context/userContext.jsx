@@ -1,6 +1,6 @@
-import React, { createContext, useState,useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { auth, db } from "../utils/firebase";
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore/lite";
 
 const CurrentUserContext = createContext(undefined);
 const CurrentUserDispatchContext = createContext(undefined);
@@ -14,7 +14,7 @@ function CurrentUserProvider({ children }) {
     auth.onAuthStateChanged((user) => {
       if (user) {
         console.log("got user");
-        getDoc(doc(db, "users/" + user.uid)).then((snapshot) => {
+        getDoc(doc(db, "users", user.uid)).then((snapshot) => {
           setCurrentUser(snapshot.data());
         });
       }

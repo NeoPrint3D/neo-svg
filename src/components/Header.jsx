@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
 import { SignOut } from "./Buttons";
 import { BsSearch, BsUpload } from "react-icons/bs";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext } from "react";
 import { CurrentUserContext } from "../context/userContext";
 import { SearchContext, SearchDispatchContext } from "../context/searchContext";
-
-import { useViewportScroll } from "framer-motion";
 
 function Header() {
   const currentUser = useContext(CurrentUserContext);
@@ -14,7 +12,7 @@ function Header() {
 
   //function that make sure when the user scrolls down the header is fixed
   useEffect(() => {
-   console.log(window.scrollY);
+    console.log(window.scrollY);
   }, [window.scrollY]);
 
   return (
@@ -25,22 +23,24 @@ function Header() {
         </Link>
       </div>
 
-      <div className="flex justify-center gap-5 items-center col-span-6">
+      <div className="flex justify-center gap-2 sm:gap-5 items-center col-span-6  ">
         <input
           type="search"
-          className="input-field w-full bg-gray-900"
+          className="input-field  bg-gray-900"
           placeholder="Search"
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button className="" onClick={() => ""}>
-          <BsSearch size={30} />
+        <button className="w-10" onClick={() => ""}>
+          <BsSearch size={30} className="h-6 sm:h-full" />
         </button>
       </div>
 
-      <div className="flex justify-end items-center mr-3 gap-5 col-span-2">
-        <Link to="/upload">
-          <BsUpload size={20} />
-        </Link>
+      <div className="grid grid-cols-2 items-center col-span-2">
+        <div className="flex justify-center items-center">
+          <Link to="/upload">
+            <BsUpload size={30} className="h-6 sm:h-full" />
+          </Link>
+        </div>
 
         <div className="dropdown dropdown-end">
           <div tabIndex="0">
@@ -63,7 +63,11 @@ function Header() {
                 )}
               </div>
             ) : (
-              <h5 className="text-lg hover:text-purple-700">Sign In</h5>
+              <div className="flex justify-center items-center">
+                <h5 className="text-xs sm:text-xl hover:text-purple-700">
+                  Sign In
+                </h5>
+              </div>
             )}
           </div>
 
@@ -79,7 +83,7 @@ function Header() {
                 <SignOut />
               </li>
             ) : (
-              <li className="flex justify-center p-3">
+              <li className="flex justify-center items-center p-3">
                 <Link to="/SignIn">Sign Up/Log in</Link>
               </li>
             )}

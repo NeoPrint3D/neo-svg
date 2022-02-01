@@ -4,20 +4,15 @@ import PreviewPost from "../components/PreviewPost";
 import { useEffect, useContext, useState } from "react";
 import { db } from "../utils/firebase";
 import { SearchContext } from "../context/searchContext";
-
 import {
-  doc,
-  setDoc,
   query,
   limit,
   getDocs,
   collection,
   orderBy,
   startAt,
-} from "firebase/firestore";
-import { uid as ID } from "uid";
-import Chance from "chance";
-function Home(props) {
+} from "firebase/firestore/lite";
+function Home() {
   const [pageSize, setPageSize] = useState(40);
   const [posts, setPosts] = useState("");
   const [postRef, setPostRef] = useState("");
@@ -33,28 +28,6 @@ function Home(props) {
     });
     return newData;
   };
-  async function generateData() {
-    const chance = new Chance();
-    console.log("generated data");
-
-    for (let i = 1; i <= 80; i++) {
-      //grab a random picture from unsplash
-      const image = "https://picsum.photos/200/300?random=" + i;
-      const id = ID(24);
-      await setDoc(doc(db, "posts", id), {
-        title: chance.word(),
-        name: chance.name({ middle: true }),
-        id: id,
-        likeCount: 0,
-        likedBy: [],
-        viewCount: 0,
-        viewedBy: [],
-        downloadCount: 0,
-        downloadedBy: [],
-        image: image,
-      });
-    }
-  }
 
   //function that make sure that the last post in the page isnt in the list
 

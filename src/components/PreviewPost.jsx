@@ -8,7 +8,7 @@ import {
 import { motion } from "framer-motion";
 import { useEffect, useContext, useState } from "react";
 import { CurrentUserContext } from "../context/userContext";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore/lite";
 
 function PostCard(props) {
   const { post } = props;
@@ -61,7 +61,7 @@ function PostCard(props) {
   };
   return (
     <motion.div
-      className="glass-container rounded-2xl h-[20rem] grid grid-rows-5 "
+      className="glass-container rounded-2xl h-[20rem] grid grid-rows-5 w-10/12 mx-auto "  
       variants={item}
       key={post.id}
     >
@@ -85,7 +85,7 @@ function PostCard(props) {
       <div className="flex justify-center items-center row-span-3">
         <Link to={`/post/${post.id}`}>
           <img
-            className="transition-all h-40 rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
+            className="transition-all h-1/2 max-h-40 rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
             src={post.file}
             alt="loading"
           />
