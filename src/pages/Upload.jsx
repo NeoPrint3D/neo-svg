@@ -1,5 +1,5 @@
 import { db, storage } from "../utils/firebase";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore/lite";
 import { useState, useEffect, useContext } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { uid as id } from "uid";
