@@ -1,25 +1,24 @@
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { db, auth } from "../utils/firebase";
 import { FcGoogle } from "react-icons/fc";
-import { setDoc, doc } from "firebase/firestore/lite";
+import { setDoc, doc, getDoc } from "firebase/firestore/lite";
+import userSchema from "../schemas/user";
 function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider).then((result) => {
-      const userRef = result.user;
-      setDoc(doc(db, "users", userRef.uid), {
-        uid: userRef.uid,
-        username: userRef.displayName,
-        email: userRef.email,
-        profilePic: userRef.photoURL,
-        liked: [],
-        folowers: [],
-        following: [],
-        created: Date.now(),
-      }).then(() => {
-        window.location.href = "/";
+    const result = await signInWithPopup(auth, provider);
+    const user = await getDoc(doc(db, "users", result.user.uid));
+    if (user.data()) {
+      console.log("user exists");
+      window.location.href = "/";
+    } else {
+      const schema = userSchema(result);
+      setDoc(doc(db, "users", result.user.uid), {
+        username: result.user.displayName,
+        ...schema,
       });
-    });
+      window.location.href = "/";
+    }
   }
   //create a sign in button
   return (
@@ -41,7 +40,7 @@ function SignIn() {
 function SignOut() {
   return (
     <button
-      className="btn  btn-outline"
+      className="btn btn-outline"
       onClick={() => {
         signOut(auth);
         window.location.href = "/";

@@ -22,8 +22,8 @@ main {
   @apply flex items-center justify-center h-[calc(100vh-4rem)];
 }
 
-.hide {
-  @apply hidden;
+.sticky-top {
+  @apply sticky top-0 z-10;
 }
 
 .glass-container {

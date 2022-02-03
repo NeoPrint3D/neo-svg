@@ -3,9 +3,9 @@ import { Suspense, lazy } from "react";
 
 //pages
 
-//lazy load components
+import Home from "./pages/Home";
 
-const Home = lazy(() => import("./pages/Home"));
+//lazy load components
 const Upload = lazy(() => import("./pages/Upload"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Post = lazy(() => import("./pages/Post"));
@@ -14,32 +14,34 @@ const SignInPage = lazy(() => import("./pages/SignIn"));
 
 //componts
 import Header from "./components/Header";
-
 import { CurrentUserProvider } from "./context/userContext";
 import { SearchProvider } from "./context/searchContext";
 
 function App() {
   return (
-  <Suspense fallback={<div>Loading...</div>}>
     <div className="background h-screen overflow-y-scroll">
       <CurrentUserProvider>
         <SearchProvider>
           <Header />
-          <div className="">
+          <Suspense
+            fallback={
+              <main>
+                <h5 className="animate-bounce text-5xl">Loading...</h5>
+              </main>
+            }
+          >
             <Routes>
               <Route path={"/"} element={<Home />} />
-
               <Route path="/upload" element={<Upload />} />
               <Route path="/user/:username" element={<Profile />} />
               <Route path="/post/:id" element={<Post />} />
               <Route path="/SignUp" element={<SignUpPage />} />
               <Route path="/SignIn" element={<SignInPage />} />
             </Routes>
-          </div>
+          </Suspense>
         </SearchProvider>
       </CurrentUserProvider>
     </div>
-  </Suspense>
   );
 }
 

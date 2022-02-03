@@ -1,9 +1,8 @@
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import Loading from "../components/Loading";
 import { motion } from "framer-motion";
 import PreviewPost from "../components/PreviewPost";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../utils/firebase";
-import { SearchContext } from "../context/searchContext";
 import {
   query,
   limit,
@@ -12,14 +11,14 @@ import {
   orderBy,
   startAt,
 } from "firebase/firestore/lite";
+
 function Home() {
-  const [pageSize, setPageSize] = useState(40);
+  const [pageSize, setPageSize] = useState(8);
   const [posts, setPosts] = useState("");
   const [postRef, setPostRef] = useState("");
   const [page, setPage] = useState(1);
   const [endPage, setEndPage] = useState("");
   const [sortBy, setSortBy] = useState("likeCount");
-  const search = useContext(SearchContext);
 
   const formalizeData = (list) => {
     const newData = [];
@@ -89,61 +88,48 @@ function Home() {
     },
   };
 
-  return (
+  return posts ? (
     <div className="my-10">
-      {/* <button onClick={() => generateData()}>new data</button> */}
-      {posts ? (
-        <>
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-[calc(100vh-6.5rem)] gap-5  "
-            variants={container}
-            initial="hidden"
-            animate="visible"
-          >
-            {posts.map((post) => {
-              //index is the index of the post in the list
-              const index = posts.indexOf(post);
-              if (
-                index < page * pageSize &&
-                index >= page * pageSize - pageSize
-              ) {
-                return <PreviewPost key={post.id} post={post} />;
-              }
-            })}
-            <div
-              className={`grid grid-cols-3 items-center col-span-full h-[4rem]	text-4xl`}
-            >
-              {page > 1 ? (
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => {
-                      setPage(page - 1);
-                    }}
-                  >{`<`}</button>
-                </div>
-              ) : (
-                <div></div>
-              )}
-              <div className="flex justify-center">{page}</div>
-              <div className="flex justify-center">
-                <button
-                  className="disabled:text-red-500"
-                  disabled={endPage === page && true}
-                  onClick={() => getMorePosts(postRef)}
-                >{`>`}</button>
-              </div>
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-[calc(100vh-6.5rem)] gap-10  "
+        variants={container}
+        initial="hidden"
+        animate="visible"
+      >
+        {posts.map((post) => {
+          //index is the index of the post in the list
+          const index = posts.indexOf(post);
+          if (index < page * pageSize && index >= page * pageSize - pageSize) {
+            return <PreviewPost key={post.id} post={post} />;
+          }
+        })}
+        <div
+          className={`grid grid-cols-3 items-center col-span-full h-[4rem]	text-4xl`}
+        >
+          {page > 1 ? (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setPage(page - 1);
+                }}
+              >{`<`}</button>
             </div>
-          </motion.div>
-        </>
-      ) : (
-        <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
-          <AiOutlineLoading3Quarters
-            size={100}
-            className="text-purple-800 animate-spin"
-          />
+          ) : (
+            <div></div>
+          )}
+          <div className="flex justify-center">{page}</div>
+          <div className="flex justify-center">
+            <button
+              className="disabled:text-red-500"
+              disabled={endPage === page && true}
+              onClick={() => getMorePosts(postRef)}
+            >{`>`}</button>
+          </div>
         </div>
-      )}
+      </motion.div>
     </div>
+  ) : (
+    <Loading />
   );
 }
 

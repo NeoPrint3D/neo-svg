@@ -1,9 +1,10 @@
 import { db, storage } from "../utils/firebase";
-import { setDoc, doc } from "firebase/firestore/lite";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore/lite";
 import { useState, useEffect, useContext } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { uid as id } from "uid";
 import { CurrentUserContext } from "../context/userContext";
+4;
 function Upload() {
   const currentUser = useContext(CurrentUserContext);
 
@@ -13,15 +14,11 @@ function Upload() {
   const [progress, setProgress] = useState(0);
   const [ID, setID] = useState("");
 
-  useEffect(() => {
-    setID(id(16));
-    console.log(ID);
-  }, [progress]);
-
   async function handleSubmit(e) {
     e.preventDefault();
+    const ID = id();
     console.log(currentUser);
-    const fileRef = ref(storage, `/posts/${currentUser.uid}-${title}`);
+    const fileRef = ref(storage, `/posts/${title}-${ID}`);
     const uploadTask = uploadBytesResumable(fileRef, file);
     uploadTask.on(
       "state_changed",
@@ -41,11 +38,11 @@ function Upload() {
       async () => {
         const downloadURL = await getDownloadURL(fileRef);
         await setDoc(doc(db, "posts", ID), {
-          title: title,
+          title: title.replace(/\b\w/g, (l) => l.toUpperCase()),
           id: ID,
           description: description,
           file: downloadURL,
-          created: new Date(),
+          created: serverTimestamp(),
           likeCount: 0,
           likedBy: [],
           viewCount: 0,
@@ -56,7 +53,7 @@ function Upload() {
           comments: [],
           user: {
             uid: currentUser.uid,
-            name: currentUser.username,
+            username: currentUser.username,
             profilePic: currentUser.profilePic,
           },
         });
@@ -70,11 +67,11 @@ function Upload() {
   }
 
   return (
-    <main>
+    <div className="form-layout my-10">
       <div className="flex justify-center">
         <h5 className="text-5xl">Upload</h5>
       </div>
-      <form className="border-4 rounded-3xl">
+      <form className="">
         <div className="flex justify-center p-5 ">
           <input
             placeholder="Title"
@@ -125,7 +122,7 @@ function Upload() {
           </button>
         </div>
       </form>
-    </main>
+    </div>
   );
 }
 export default Upload;

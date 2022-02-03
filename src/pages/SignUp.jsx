@@ -1,4 +1,4 @@
-import { SignIn } from "../components/Buttons";
+import { SignIn } from "../components/GoogleSignIn";
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { decrypt } from "../utils/encryption";
@@ -8,19 +8,21 @@ import Input from "../components/Input";
 import { Link } from "react-router-dom";
 import {
   HiChevronLeft,
-  HiCheck,
-  HiExclamation,
   HiOutlineKey,
   HiOutlineMailOpen,
   HiLockClosed,
+  HiOutlineUser,
 } from "react-icons/hi";
 import {
   collection,
   getDocs,
+  setDoc,
+  doc,
   limit,
   query,
   where,
 } from "firebase/firestore/lite";
+import userSchema from "../schemas/user";
 
 function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -44,14 +46,10 @@ function SignUpPage() {
     if (vfCode === vfCodeConfirm) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((user) => {
+          const schema = userSchema(user);
           setDoc(doc(db, "users", user.user.uid), {
-            created: Date.now(),
-            uid: user.user.uid,
-            username: username,
-            email: user.user.email,
-            profilePic: "",
-            folowers: [],
-            following: [],
+            ...schema,
+            username,
           }).then(() => {
             window.location.href = "/";
           });
@@ -64,11 +62,27 @@ function SignUpPage() {
     }
   }
 
+  async function resendAuthCode(e) {
+    e.preventDefault();
+    const url = `https://np3demail.herokuapp.com/auth?email=${email}&api_key=${
+      import.meta.env.VITE_API_MAIL_KEY
+    }`;
+    await fetch(url)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setVfCode(decrypt(data.data, import.meta.env.VITE_HASH_KEY));
+      });
+  }
+
   async function sendAuthCode(e) {
     e.preventDefault();
     const url = `https://np3demail.herokuapp.com/auth?email=${email}&api_key=${
       import.meta.env.VITE_API_MAIL_KEY
     }`;
+
     const q1 = query(
       collection(db, "users"),
       where("username", "==", username),
@@ -79,24 +93,35 @@ function SignUpPage() {
       where("email", "==", email),
       limit(1)
     );
-    await getDocs(q1).then((user) => {
-      setNameTaken(user.docs.length > 0);
+
+    const users = await getDocs(q1).then((snapshot) => {
+      if (snapshot.docs.length > 0) {
+        setNameTaken(true);
+        return false;
+      } else {
+        return true;
+      }
     });
 
-    await getDocs(q2).then((user) => {
-      setEmailTaken(user.docs.length > 0);
+    const emails = await getDocs(q2).then((users) => {
+      if (users.docs.length > 0) {
+        setEmailTaken(true);
+        return false;
+      }
+      return true;
     });
 
-    if (isEmailTaken || isNameTaken) {
-      alert("Username or email is already taken");
-    } else {
+    if (users || emails) {
       await fetch(url)
         .then((res) => {
           return res.json();
         })
-        .then((data) => {
+        .then(async (data) => {
           setVfCode(decrypt(data.data, import.meta.env.VITE_HASH_KEY));
+          setModalOpen(true);
         });
+    } else {
+      alert("Please check your credentials");
     }
   }
 
@@ -112,53 +137,23 @@ function SignUpPage() {
                     <h5 className="text-4xl">Sign Up</h5>
                   </div>
                   <Input
-                    icon={
-                      isNameTaken ? (
-                        <HiExclamation size={20} />
-                      ) : (
-                        <HiCheck size={20} />
-                      )
-                    }
+                    icon={<HiOutlineUser className="text-2xl" />}
                     type="text"
                     placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    badge={isNameTaken ? "badge-warning" : "badge-success"}
-                    message={
-                      isNameTaken && (
-                        <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-[3.5rem] -translate-y-5">
-                          <p className="text-xs text-red-500 font-extrabold">
-                            Username already taken
-                          </p>
-                        </div>
-                      )
-                    }
+                    badge={"badge-success"}
                     customClass={`${
                       isNameTaken ? "bg-red-300" : "bg-slate-900"
                     } input-field`}
                   />
                   <Input
-                    icon={
-                      isEmailTaken ? (
-                        <HiExclamation size={20} />
-                      ) : (
-                        <HiOutlineMailOpen size={20} />
-                      )
-                    }
+                    icon={<HiOutlineMailOpen size={20} />}
                     type="text"
                     placeholder="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    badge={isEmailTaken ? "badge-warning" : "badge-info"}
-                    message={
-                      isEmailTaken && (
-                        <div className="group-hover:animate-pulse group-hover:block fixed hidden bg-yellow-400/80 p-2 rounded translate-x-5 -translate-y-5">
-                          <p className="text-xs text-red-500 font-extrabold">
-                            Email Exists
-                          </p>
-                        </div>
-                      )
-                    }
+                    badge={"badge-info"}
                     customClass={`${
                       isEmailTaken ? "bg-red-300" : "bg-slate-900"
                     } input-field`}
@@ -234,7 +229,7 @@ function SignUpPage() {
                   <div className="flex justify-center mt-3">
                     <button
                       className="underline text-purple-600"
-                      onClick={(e) => sendAuthCode(e)}
+                      onClick={(e) => resendAuthCode(e)}
                     >
                       Resend auth code
                     </button>

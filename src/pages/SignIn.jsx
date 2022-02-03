@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import EaseIn from "../components/EaseIn";
 import Input from "../components/Input";
-import { SignIn } from "../components/Buttons";
+import { SignIn } from "../components/GoogleSignIn";
 import { auth } from "../utils/firebase";
 import { HiOutlineKey, HiOutlineMailOpen } from "react-icons/hi";
 import { signInWithEmailAndPassword } from "firebase/auth";
