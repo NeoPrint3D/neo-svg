@@ -8,7 +8,6 @@ import Loading from "../components/Loading";
 import {
   AiOutlineLike,
   AiFillLike,
-  AiOutlineDownload,
   AiOutlineArrowDown,
   AiOutlineEye,
 } from "react-icons/ai";
@@ -35,12 +34,11 @@ function Post() {
     }
   }, [currentUser, post]);
 
-  function deletePost() {
-    deleteObject(ref(storage, `/posts/${post.title}-${posy.id}`)).then(() => {
-      deleteDoc(doc(db, "posts", id)).then(() => {
-        window.location.href = "/";
-      });
-    });
+  async function deletePost() {
+    //delete the image from storage
+    await deleteObject(ref(storage, "/images/" + post.id));
+    await deleteDoc(doc(db, "posts", id));
+    window.location.href = "/";
   }
 
   const handleLike = async () => {
@@ -72,7 +70,7 @@ function Post() {
 
   async function downloadSvg() {
     updateDoc(doc(db, "posts", id), {
-      svgDownloads: 0,
+      svgDownloads: post.svgDownloads + 1,
     });
     await fetch(post.file)
       .then((res) => res.blob())
@@ -90,10 +88,8 @@ function Post() {
 
   async function downloadPng() {
     await updateDoc(doc(db, "posts", id), {
-      pngDownloads: 0,
-    }).then(() => {
-      console.log("done");
-    });
+      pngDownloads: post.pngDownloads + 1,
+    }).then(() => {});
     await fetch(post.file)
       .then((res) => {
         return res.blob();
@@ -129,6 +125,16 @@ function Post() {
               <p className="text-center text-md">{`By: ${post.user.username}`}</p>
             </div>
           </div>
+          {owns ? (
+            <div className="flex flex-col gap-3">
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
+                onClick={deletePost}
+              >
+                Delete
+              </button>
+            </div>
+          ) : null}
 
           <div className="flex flex-col gap-5">
             <div className="flex justify-center">
@@ -137,7 +143,7 @@ function Post() {
               </div>
             </div>
             <div className="flex justify-center ">
-              <div className="grid grid-cols-3 w-3/4">
+              <div className="grid grid-cols-3 w-96">
                 <div className="flex justify-center items-center gap-5">
                   <AiOutlineEye size={45} className="text-4xl" />
                   <h5 className="text-3xl font-bold">

@@ -52,7 +52,7 @@ function PreviewProfile(props) {
           />
         </div>
       </Link>
-      <div className="flex justify-center items-center">
+      <div className="flex ">
         <h5 className="text-base">{user.name}</h5>
       </div>
 

@@ -6,10 +6,11 @@ import {
   AiOutlineEye,
   AiFillLike,
 } from "react-icons/ai";
-import { motion } from "framer-motion";
 import { useEffect, useContext, useState } from "react";
 import { CurrentUserContext } from "../context/userContext";
 import { doc, updateDoc } from "firebase/firestore/lite";
+import Img from "react-cool-img"
+import placeholder from "../assets/placeholder.png";
 
 function PreviewPost(props) {
   const { post } = props;
@@ -58,38 +59,16 @@ function PreviewPost(props) {
     });
   };
 
-  const item = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-    },
-  };
-
   return (
-    <motion.div
-      className="bg-purple-800 rounded-2xl h-auto w-11/12 sm:w-full grid grid-rows-8  "
-      variants={item}
-      key={post.id}
-    >
+    <div className="bg-purple-800 rounded-2xl h-auto w-11/12 sm:w-full grid grid-rows-8  ease-in duration-100 popup-container">
       <div className="grid grid-cols-5 items-center mt-2 ">
         <div className="flex justify-start col-span-1 ml-2 mb-4">
           <Link to={`/user/${post.user.username}`}>
-            {post.user.profilePic ? (
-              <img
-                className="w-12 h-12 rounded-full "
-                src={post.user.profilePic}
-                alt="user"
-              />
-            ) : (
-              <div className="flex justify-center items-center">
-                <div className="w-12 h-12 rounded-full bg-gray-700 border-4 border-purple-700">
-                  <h1 className="text-xl text-center">
-                    {`${post.user.username}`.charAt(0)}
-                  </h1>
-                </div>
-              </div>
-            )}
+            <img
+              className="w-12 h-12 rounded-full "
+              src={post.user.profilePic}
+              alt="user"
+            />
           </Link>
         </div>
         <div className="flex flex-col items-center col-span-3">
@@ -102,9 +81,10 @@ function PreviewPost(props) {
       <div className="flex justify-center items-center row-span-3">
         <Link to={`/post/${post.id}`}>
           <button onClick={() => handleView()}>
-            <img
+            <Img
               className="transition-all max-h-56 rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
               src={post.file}
+              placeholder={placeholder}
               alt="loading"
             />
           </button>
@@ -140,7 +120,7 @@ function PreviewPost(props) {
           </h1>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 export default PreviewPost;

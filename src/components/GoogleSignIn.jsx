@@ -15,6 +15,7 @@ function SignIn() {
       const schema = userSchema(result);
       setDoc(doc(db, "users", result.user.uid), {
         username: result.user.displayName,
+        profilePic: result.user.photoURL,
         ...schema,
       });
       window.location.href = "/";

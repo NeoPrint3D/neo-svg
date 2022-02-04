@@ -7,7 +7,6 @@ function userSchema(user) {
         created: serverTimestamp(),
         uid: userRef.uid,
         email: userRef.email,
-        profilePic: userRef.photoURL,
         bio: "",
         liked: [],
         folowers: [],

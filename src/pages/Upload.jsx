@@ -4,7 +4,7 @@ import { useState, useEffect, useContext } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { uid as id } from "uid";
 import { CurrentUserContext } from "../context/userContext";
-4;
+import FileResizer from "react-image-file-resizer";
 function Upload() {
   const currentUser = useContext(CurrentUserContext);
 
@@ -12,13 +12,13 @@ function Upload() {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
   const [progress, setProgress] = useState(0);
-  const [ID, setID] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
+
     const ID = id();
     console.log(currentUser);
-    const fileRef = ref(storage, `/posts/${title}-${ID}`);
+    const fileRef = ref(storage, "/images/" + ID);
     const uploadTask = uploadBytesResumable(fileRef, file);
     uploadTask.on(
       "state_changed",
@@ -47,7 +47,8 @@ function Upload() {
           likedBy: [],
           viewCount: 0,
           viewedBy: [],
-          downloadCount: 0,
+          pngDownloads: 0,
+          svgDownloads: 0,
           downloadedBy: [],
           tags: [],
           comments: [],

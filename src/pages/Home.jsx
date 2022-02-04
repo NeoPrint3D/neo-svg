@@ -1,5 +1,4 @@
 import Loading from "../components/Loading";
-import { motion } from "framer-motion";
 import PreviewPost from "../components/PreviewPost";
 import { useEffect, useState } from "react";
 import { db } from "../utils/firebase";
@@ -31,8 +30,6 @@ function Home() {
   //function that make sure that the last post in the page isnt in the list
 
   useEffect(() => {
-    //update when the data is changed and clean up when the component is unmounted
-    console.log("got posts");
     getPosts().then((snapshot) => {
       setPostRef(snapshot);
       setPosts(formalizeData(snapshot));
@@ -90,12 +87,7 @@ function Home() {
 
   return posts ? (
     <div className="my-10">
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-[calc(100vh-6.5rem)] gap-10  "
-        variants={container}
-        initial="hidden"
-        animate="visible"
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-[calc(100vh-6.5rem)] gap-10">
         {posts.map((post) => {
           //index is the index of the post in the list
           const index = posts.indexOf(post);
@@ -126,7 +118,7 @@ function Home() {
             >{`>`}</button>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   ) : (
     <Loading />

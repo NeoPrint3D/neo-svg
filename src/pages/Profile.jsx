@@ -16,7 +16,6 @@ function Profile() {
   const [user, setUser] = useState(null);
   useEffect(() => {
     getUser();
-    console.log(username);
   }, []);
 
   async function getUser() {

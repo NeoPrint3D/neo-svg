@@ -3,7 +3,7 @@ import { SignOut } from "./GoogleSignIn";
 import { BsSearch, BsUpload } from "react-icons/bs";
 import { useEffect, useContext } from "react";
 import { CurrentUserContext } from "../context/userContext";
-import {  SearchDispatchContext } from "../context/searchContext";
+import { SearchDispatchContext } from "../context/searchContext";
 
 function Header() {
   const currentUser = useContext(CurrentUserContext);
@@ -38,7 +38,7 @@ function Header() {
       <div className="flex justify-center gap-2 sm:gap-5 items-center col-span-5 ">
         <input
           type="search"
-          className="w-3/4 p-3 rounded-xl text-white bg-slate-700 focus:outline-white focus:shadow-outline"
+          className="w-3/4 p-3 rounded-xl text-white bg-slate-700 focus:outline-purple-600 focus:shadow-outline"
           placeholder="Search"
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -60,21 +60,11 @@ function Header() {
             {currentUser ? (
               <div className="flex items-center justify-center gap-5 p-1 hover:bg-slate-700 rounded-xl">
                 <div>
-                  {currentUser.profilePic ? (
-                    <img
-                      className="w-10 sm:w-12 rounded-full "
-                      src={currentUser.profilePic}
-                      alt="user"
-                    />
-                  ) : (
-                    <div className="flex justify-center items-center">
-                      <div className="w-10 h-10 rounded-full bg-gray-700 border-4 border-purple-700">
-                        <h1 className="text-xl text-center">
-                          {`${currentUser.username}`.charAt(0)}
-                        </h1>
-                      </div>
-                    </div>
-                  )}
+                  <img
+                    className="w-10 sm:w-12 rounded-full "
+                    src={currentUser.profilePic}
+                    alt="user"
+                  />
                 </div>
               </div>
             ) : (

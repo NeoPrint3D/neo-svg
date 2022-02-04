@@ -32,3 +32,23 @@ main {
   backdrop-filter: blur(50px);
   border: 1px solid rgba(124, 31, 239, 0.2);
 }
+
+.popup-container {
+  animation: popIn  .25s;
+
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+  
+
+
+
