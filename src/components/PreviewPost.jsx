@@ -17,10 +17,10 @@ function PreviewPost(props) {
   const currentUser = useContext(CurrentUserContext);
 
   const [liked, setLiked] = useState(false);
-  const [likes, setLikes] = useState("");
+  const [like, setLikes] = useState("");
 
   useEffect(() => {
-    setLikes(post.likeCount);
+    setLikes(post.likes);
     if (currentUser) {
       post.likedBy.includes(currentUser.uid) ? setLiked(true) : setLiked(false);
     }
@@ -29,10 +29,10 @@ function PreviewPost(props) {
   const handleLike = async () => {
     if (currentUser) {
       if (liked) {
-        setLikes(likes - 1);
+        setLikes(like - 1);
         updateDoc(doc(db, "posts", post.id), {
           likedBy: post.likedBy.filter((id) => id !== currentUser.uid),
-          likeCount: likes - 1,
+          likes: like - 1,
         });
 
         updateDoc(doc(db, "users", currentUser.uid), {
@@ -40,10 +40,10 @@ function PreviewPost(props) {
         });
         setLiked(false);
       } else {
-        setLikes(likes + 1);
+        setLikes(like + 1);
         updateDoc(doc(db, "posts", post.id), {
           likedBy: [...post.likedBy, currentUser.uid],
-          likeCount: likes + 1,
+          likes: like + 1,
         });
         updateDoc(doc(db, "users", currentUser.uid), {
           liked: [...currentUser.liked, post.id],
@@ -55,25 +55,25 @@ function PreviewPost(props) {
 
   const handleView = () => {
     updateDoc(doc(db, "posts", post.id), {
-      viewCount: post.viewCount + 1,
+      views: post.views + 1,
     });
   };
 
   return (
-    <div className="bg-purple-800 rounded-2xl h-auto w-11/12 sm:w-full grid grid-rows-8  ease-in duration-100 popup-container">
+    <div className="bg-purple-800 rounded-2xl h-auto w-11/12 sm:w-full grid grid-rows-8  p-3 ease-in duration-100 popup-container">
       <div className="grid grid-cols-5 items-center mt-2 ">
         <div className="flex justify-start col-span-1 ml-2 mb-4">
-          <Link to={`/user/${post.user.username}`}>
+          <Link to={`/user/${post.authorName}`}>
             <img
               className="w-12 h-12 rounded-full "
-              src={post.user.profilePic}
+              src={post.authorPhoto}
               alt="user"
             />
           </Link>
         </div>
         <div className="flex flex-col items-center col-span-3">
-          <h4 className="text-3xl">{post.title}</h4>
-          <h3 className="flex justify-center text-sm ">{post.user.username}</h3>
+          <h4 className="text-2xl text-center font-semibold">{post.title}</h4>
+          <h3 className="flex justify-center text-sm ">{post.authorName}</h3>
         </div>
       </div>
 
@@ -95,12 +95,12 @@ function PreviewPost(props) {
       <div className="grid grid-cols-3 row-span-3">
         <div className="flex justify-evenly items-center">
           <AiOutlineEye className="text-white" size={35} />
-          <h1 className="text-2xl text-center">{post.viewCount}</h1>
+          <h1 className="text-2xl text-center">{post.views}</h1>
         </div>
 
         <div className="flex justify-evenly items-center">
           <button
-            disabled={currentUser ? currentUser.uid === post.user.uid : true}
+            disabled={currentUser ? currentUser.uid === post.author : true}
             onClick={() => handleLike()}
             className="disabled:opacity-20"
           >
@@ -110,7 +110,7 @@ function PreviewPost(props) {
               <AiOutlineLike size={35} className="text-white" />
             )}
           </button>
-          <h1 className="text-2xl text-center">{likes}</h1>
+          <h1 className="text-2xl text-center">{like}</h1>
         </div>
 
         <div className="flex justify-evenly items-center">

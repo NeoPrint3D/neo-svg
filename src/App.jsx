@@ -11,6 +11,7 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Post = lazy(() => import("./pages/Post"));
 const SignUpPage = lazy(() => import("./pages/SignUp"));
 const SignInPage = lazy(() => import("./pages/SignIn"));
+const Search = lazy(() => import("./pages/Search"));
 
 //componts
 import Header from "./components/Header";
@@ -35,8 +36,10 @@ function App() {
               <Route path="/upload" element={<Upload />} />
               <Route path="/user/:username" element={<Profile />} />
               <Route path="/post/:id" element={<Post />} />
-              <Route path="/SignUp" element={<SignUpPage />} />
-              <Route path="/SignIn" element={<SignInPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
+              <Route path="/signin" element={<SignInPage />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="*" element={<h1>404</h1>} />
             </Routes>
           </Suspense>
         </SearchProvider>

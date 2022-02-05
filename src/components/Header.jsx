@@ -4,95 +4,72 @@ import { BsSearch, BsUpload } from "react-icons/bs";
 import { useEffect, useContext } from "react";
 import { CurrentUserContext } from "../context/userContext";
 import { SearchDispatchContext } from "../context/searchContext";
+import algoliasearch from "algoliasearch/lite";
 
 function Header() {
   const currentUser = useContext(CurrentUserContext);
-  const setSearch = useContext(SearchDispatchContext);
 
   //function that make sure when the user scrolls down the header is sticky
-  const handleScroll = () => {
-    const header = document.querySelector("header");
-    if (window.scrollY > 0) {
-      header.classList.add("sticky");
-    } else {
-      header.classList.remove("sticky");
-    }
-  };
-
-  useEffect(() => {
-    console.log(currentUser);
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   return (
-    <header className={`bg-gray-900 h-16 grid grid-cols-9 `}>
-      <div className="flex justify-start items-center ml-3 col-span-2">
-        <Link to="/" className="text-xl font-logo">
+    <header
+      className={`main-gradient bg-gray-900 h-20 grid grid-cols-10  rounded-b-2xl shadow-md shadow-purple-800`}
+    >
+      <div className="flex justify-start items-center ml-5 col-span-2">
+        <Link to="/" className="text-3xl font-logo">
           NeoSVG
         </Link>
       </div>
 
-      <div className="flex justify-center gap-2 sm:gap-5 items-center col-span-5 ">
-        <input
-          type="search"
-          className="w-3/4 p-3 rounded-xl text-white bg-slate-700 focus:outline-purple-600 focus:shadow-outline"
-          placeholder="Search"
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button className="w-10" onClick={() => ""}>
-          <BsSearch size={30} className="h-6 md:h-full" />
-        </button>
-      </div>
+      <div className="col-span-4"></div>
+      <div className="flex justify-end col-span-4  mr-5">
+        <div className="grid grid-cols-2 items-center gap-5 md:gap-10">
+          <Link to="/search">
+            <BsSearch size={50} className="transition-all h-10 hover:h-8  " />
+          </Link>
 
-      <div className="flex items-center justify-end gap-5 col-span-2 mr-2">
-        {currentUser && (
-          <>
-            <Link to="/upload" className="text-xl font-logo">
-              <BsUpload size={30} className="h-6 md:h-full" />
-            </Link>
-          </>
-        )}
-        <div className="dropdown dropdown-hover dropdown-end">
-          <div tabIndex="0">
-            {currentUser ? (
-              <div className="flex items-center justify-center gap-5 p-1 hover:bg-slate-700 rounded-xl">
-                <div>
-                  <img
-                    className="w-10 sm:w-12 rounded-full "
-                    src={currentUser.profilePic}
-                    alt="user"
-                  />
+          <div className="dropdown dropdown-hover dropdown-end ">
+            <div tabIndex="0">
+              {currentUser ? (
+                <div className="hover:bg-slate-600 p-1 rounded-xl">
+                  <div>
+                    <img
+                      className="w-14 rounded-full "
+                      src={currentUser.profilePic}
+                      alt="user"
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex justify-center items-center">
-                <h5 className="text-xs sm:text-xl hover:text-purple-700">
-                  Sign In
-                </h5>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="flex justify-center items-center">
+                  <h5 className="text-xs sm:text-xl hover:text-purple-700">
+                    Sign In
+                  </h5>
+                </div>
+              )}
+            </div>
 
-          <ul
-            tabIndex="0"
-            className="dropdown-content bg-slate-800 w-52 rounded p-2 shadow-lg shadow-rose-900"
-          >
-            {currentUser ? (
-              <li className="flex flex-col items-center p-3 gap-5">
-                <button className="btn btn-primary">
-                  <Link to={`/user/${currentUser.username}`}>Profile</Link>
-                </button>
-                <SignOut />
-              </li>
-            ) : (
-              <li className="flex justify-center items-center p-3">
-                <Link to="/SignIn">Sign Up/Log in</Link>
-              </li>
-            )}
-          </ul>
+            <ul
+              tabIndex="0"
+              className="dropdown-content bg-slate-800 w-52 rounded p-2 shadow-lg shadow-purple-900"
+            >
+              {currentUser ? (
+                <li className="flex flex-col items-center p-3 gap-5">
+                  <div className="btn btn-primary">
+                    <Link to={`/user/${currentUser.username}`}>Profile</Link>
+                  </div>
+                  <div className="btn btn-info">
+                    <Link to={`/upload`}>Upload</Link>
+                  </div>
+                  <SignOut />
+                </li>
+              ) : (
+                <li className="flex justify-center items-center p-3">
+                  <Link to="/SignIn">Sign Up/Log in</Link>
+                </li>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
     </header>

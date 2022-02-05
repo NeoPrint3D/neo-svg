@@ -17,7 +17,7 @@ function Home() {
   const [postRef, setPostRef] = useState("");
   const [page, setPage] = useState(1);
   const [endPage, setEndPage] = useState("");
-  const [sortBy, setSortBy] = useState("likeCount");
+  const [sortBy, setSortBy] = useState("likes");
 
   const formalizeData = (list) => {
     const newData = [];
@@ -87,9 +87,11 @@ function Home() {
 
   return posts ? (
     <div className="my-10">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-[calc(100vh-6.5rem)] gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-[calc(100vh-7.5rem)] gap-10">
         {posts.map((post) => {
+          console.log(posts);
           //index is the index of the post in the list
+          console.log(post);
           const index = posts.indexOf(post);
           if (index < page * pageSize && index >= page * pageSize - pageSize) {
             return <PreviewPost key={post.id} post={post} />;

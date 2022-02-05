@@ -7,7 +7,10 @@
   font-family: "Pushster", sans-serif;
 }
 .background {
-  @apply bg-gradient-to-tr from-gray-600 via-gray-800 to-gray-500;
+  @apply bg-gradient-to-br from-slate-500 to-gray-900;
+}
+.main-gradient {
+  @apply bg-gradient-to-b from-gray-700 to-slate-900;
 }
 
 .form-layout {
@@ -19,7 +22,7 @@
 }
 
 main {
-  @apply flex items-center justify-center h-[calc(100vh-4rem)];
+  @apply flex items-center justify-center h-[calc(100vh-5rem)];
 }
 
 .sticky-top {
@@ -34,13 +37,12 @@ main {
 }
 
 .popup-container {
-  animation: popIn  .25s;
-
+  animation: popIn 0.25s;
 }
 
 @keyframes popIn {
   0% {
-    transform: scale(0);
+    transform: translate(-25%, 0%);
     opacity: 0;
   }
   100% {
@@ -48,7 +50,3 @@ main {
     opacity: 1;
   }
 }
-  
-
-
-

@@ -4,7 +4,6 @@ import { useState, useEffect, useContext } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { uid as id } from "uid";
 import { CurrentUserContext } from "../context/userContext";
-import FileResizer from "react-image-file-resizer";
 function Upload() {
   const currentUser = useContext(CurrentUserContext);
 
@@ -43,21 +42,17 @@ function Upload() {
           description: description,
           file: downloadURL,
           created: serverTimestamp(),
-          likeCount: 0,
+          likes: 0,
           likedBy: [],
-          viewCount: 0,
-          viewedBy: [],
+          views: 0,
           pngDownloads: 0,
           svgDownloads: 0,
-          downloadedBy: [],
           tags: [],
-          comments: [],
-          user: {
-            uid: currentUser.uid,
-            username: currentUser.username,
-            profilePic: currentUser.profilePic,
-          },
+          author: currentUser.uid,
+          authorName: currentUser.username,
+          authorPhoto: currentUser.profilePic,
         });
+        fetch(`https://neo-svg-agolia.vercel.app/index?id=${ID}&key=${import.meta.env.VITE_ALGOLIA_SYNC_KEY}`);
         setProgress(false);
       }
     );

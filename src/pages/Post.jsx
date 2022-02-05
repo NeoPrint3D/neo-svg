@@ -23,12 +23,12 @@ function Post() {
   useEffect(() => {
     getDoc(doc(db, "posts", id)).then((snapshot) => {
       setPost(snapshot.data());
-      setOwns(snapshot.data().user.uid === currentUser.uid);
+      setOwns(snapshot.data().author === currentUser.uid);
     });
   }, [id, currentUser]);
 
   useEffect(() => {
-    setLikes(post.likeCount);
+    setLikes(post.likes);
     if (currentUser && post) {
       post.likedBy.includes(currentUser.uid) ? setLiked(true) : setLiked(false);
     }
@@ -38,6 +38,11 @@ function Post() {
     //delete the image from storage
     await deleteObject(ref(storage, "/images/" + post.id));
     await deleteDoc(doc(db, "posts", id));
+    fetch(
+      `https://neo-svg-agolia.vercel.app/delete?id=${id}&key=${
+        import.meta.env.VITE_ALGOLIA_SYNC_KEY
+      }`
+    );
     window.location.href = "/";
   }
 
@@ -47,7 +52,7 @@ function Post() {
         setLikes(likes - 1);
         updateDoc(doc(db, "posts", post.id), {
           likedBy: post.likedBy.filter((id) => id !== currentUser.uid),
-          likeCount: likes - 1,
+          likes: likes - 1,
         });
 
         updateDoc(doc(db, "users", currentUser.uid), {
@@ -58,7 +63,7 @@ function Post() {
         setLikes(likes + 1);
         updateDoc(doc(db, "posts", post.id), {
           likedBy: [...post.likedBy, currentUser.uid],
-          likeCount: likes + 1,
+          likes: likes + 1,
         });
         updateDoc(doc(db, "users", currentUser.uid), {
           liked: [...currentUser.liked, post.id],
@@ -115,14 +120,14 @@ function Post() {
 
   return post ? (
     <div className="flex justify-center my-10">
-      <div className=" w-11/12 bg-slate-900 rounded-2xl p-10 ">
+      <div className=" w-11/12 bg-gray-900 rounded-2xl p-10 ">
         <div className="flex flex-col gap-5">
           <div className="flex flex-col items-center">
             <div className="flex flex-col gap-3">
               <h1 className="text-5xl font-bold text-center">
                 {post.title.replace(/\b\w/g, (l) => l.toUpperCase())}
               </h1>
-              <p className="text-center text-md">{`By: ${post.user.username}`}</p>
+              <p className="text-center text-md">{`By: ${post.authorName}`}</p>
             </div>
           </div>
           {owns ? (
@@ -146,9 +151,7 @@ function Post() {
               <div className="grid grid-cols-3 w-96">
                 <div className="flex justify-center items-center gap-5">
                   <AiOutlineEye size={45} className="text-4xl" />
-                  <h5 className="text-3xl font-bold">
-                    {post.svgDownloads + post.pngDownloads}
-                  </h5>
+                  <h5 className="text-3xl font-bold">{post.views}</h5>
                 </div>
                 <div className="flex justify-center items-center gap-5">
                   <AiOutlineArrowDown size={45} className="text-4xl" />
