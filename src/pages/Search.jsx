@@ -73,16 +73,16 @@ function Search() {
           placeholder="Search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-gray-500 p-4 rounded-xl w-[30rem]"
+          className="bg-gray-500 p-4 rounded-xl w-[30rem] "
         />
       </div>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center overflow-y-auto ">
         {hits.map((hit) => (
-          <div className="bg-gray-700 w-11/12 rounded-2xl">
+          <div className="bg-gray-700 w-11/12 rounded-2xl my-10">
             <Link to={`/post/${hit.objectID}`}>
               <button onClick={() => ""}>
                 <Img
-                  className="transition-all max-h-56 rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
+                  className="transition-all max-h-56  rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
                   src={hit.image}
                   placeholder={placeholder}
                   alt="loading"

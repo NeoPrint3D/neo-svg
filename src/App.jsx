@@ -20,7 +20,7 @@ import { SearchProvider } from "./context/searchContext";
 
 function App() {
   return (
-    <div className="background h-screen overflow-y-scroll">
+    <div className="background h-screen">
       <CurrentUserProvider>
         <SearchProvider>
           <Header />
