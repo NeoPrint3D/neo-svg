@@ -142,9 +142,12 @@ function Post() {
           ) : null}
 
           <div className="flex flex-col gap-5">
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center">
               <div className="bg-purple-600 rounded-2xl">
                 <img src={post.file} alt="" className=" max-h-96 m-4 " />
+              </div>
+              <div>
+                {post.description}
               </div>
             </div>
             <div className="flex justify-center ">

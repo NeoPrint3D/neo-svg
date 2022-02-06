@@ -31,7 +31,7 @@ function Header() {
           <div className="dropdown dropdown-hover dropdown-end ">
             <div tabIndex="0">
               {currentUser ? (
-                <div className="hover:bg-slate-600 p-1 rounded-xl">
+                <div className="action-hover">
                   <div>
                     <img
                       className="w-14 rounded-full "
@@ -55,12 +55,19 @@ function Header() {
             >
               {currentUser ? (
                 <li className="flex flex-col items-center p-3 gap-5">
-                  <div className="btn btn-primary">
-                    <Link to={`/user/${currentUser.username}`}>Profile</Link>
-                  </div>
-                  <div className="btn btn-info">
-                    <Link to={`/upload`}>Upload</Link>
-                  </div>
+                  <Link
+                    to={`/user/${currentUser.username}`}
+                    className="btn btn-ghost text-lg font-bold"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    to={`/upload`}
+                    className="btn btn-ghost text-lg
+                  "
+                  >
+                    Upload
+                  </Link>
                   <SignOut />
                 </li>
               ) : (
