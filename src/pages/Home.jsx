@@ -18,6 +18,8 @@ function Home() {
   const [page, setPage] = useState(1);
   const [endPage, setEndPage] = useState("");
   const [sortBy, setSortBy] = useState("likes");
+  const [sortRef, setSortRef] = useState("");
+  const [orderRef, setOrderRef] = useState("");
 
   const formalizeData = (list) => {
     const newData = [];
@@ -30,13 +32,14 @@ function Home() {
   //function that make sure that the last post in the page isnt in the list
 
   useEffect(() => {
-    getPosts().then((snapshot) => {
+    getInitialPosts().then((snapshot) => {
       setPostRef(snapshot);
       setPosts(formalizeData(snapshot));
+      console.log(snapshot);
     });
-  }, [sortBy]);
+  }, [sortBy, orderBy]);
 
-  async function getPosts() {
+  async function getInitialPosts() {
     const first = query(
       collection(db, "posts"),
       limit(pageSize),
@@ -46,7 +49,6 @@ function Home() {
     if (documentSnapshots.docs.length + 1 < pageSize) {
       setEndPage(page);
     }
-
     return documentSnapshots;
   }
 
@@ -73,32 +75,47 @@ function Home() {
     }
   }
 
-  const container = {
-    hidden: { opacity: 1, scale: 0.5 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        delayChildren: 0.1,
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
   return posts ? (
-    <div className="my-10">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 h-[calc(100vh-7.5rem)] gap-10">
+    <div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          console.log(sortRef, orderRef);
+          setSortBy(sortRef);
+        }}
+        className="my-5 flex justify-center gap-5"
+      >
+        <select
+          className="select text-lg "
+          onChange={(e) => setSortRef(e.target.value)}
+        >
+          <option value="likes">Likes</option>
+          <option value="created">Created At</option>
+        </select>
+        <select
+          name=""
+          id=""
+          className="bg-purple-600 text-lg p-3 rounded-lg"
+          onChange={(e) => setOrderRef(e.target.value)}
+        >
+          <option value="desc" className="bg-black">
+            Descending
+          </option>
+          <option value="asc" className="bg-black">
+            Ascending
+          </option>
+        </select>
+        <button>Sort</button>
+      </form>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 h-[calc(100vh-7.5rem)] gap-y-5">
         {posts.map((post) => {
-          console.log(posts);
-          //index is the index of the post in the list
-          console.log(post);
           const index = posts.indexOf(post);
           if (index < page * pageSize && index >= page * pageSize - pageSize) {
             return <PreviewPost key={post.id} post={post} />;
           }
         })}
         <div
-          className={`grid grid-cols-3 items-center col-span-full h-[4rem]	text-4xl`}
+          className={`grid grid-cols-3 items-center col-span-full h-[4rem]text-4xl`}
         >
           {page > 1 ? (
             <div className="flex justify-center">

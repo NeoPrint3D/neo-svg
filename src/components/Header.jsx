@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import { SignOut } from "./GoogleSignIn";
-import { BsSearch, BsUpload } from "react-icons/bs";
+import { BsSearch } from "react-icons/bs";
 import { useEffect, useContext } from "react";
 import { CurrentUserContext } from "../context/userContext";
-import { SearchDispatchContext } from "../context/searchContext";
-import algoliasearch from "algoliasearch/lite";
 
 function Header() {
   const currentUser = useContext(CurrentUserContext);
@@ -14,7 +12,7 @@ function Header() {
   return (
     <header
       className={`main-gradient bg-gray-900 h-20 grid grid-cols-10  rounded-b-2xl shadow-md shadow-purple-800`}
-    >
+>
       <div className="flex justify-start items-center ml-5 col-span-2">
         <Link to="/" className="text-3xl font-logo">
           NeoSVG
@@ -24,8 +22,9 @@ function Header() {
       <div className="col-span-4"></div>
       <div className="flex justify-end col-span-4  mr-5">
         <div className="grid grid-cols-2 items-center gap-5 md:gap-10">
-          <Link to="/search">
-            <BsSearch size={50} className="transition-all h-10 hover:h-8  " />
+
+          <Link to="/search" alt="search" className="w-10">
+            <BsSearch size={50} className="transition-all h-10  hover:h-8 " />
           </Link>
 
           <div className="dropdown dropdown-hover dropdown-end ">
@@ -34,7 +33,7 @@ function Header() {
                 <div className="action-hover">
                   <div>
                     <img
-                      className="w-14 rounded-full "
+                      className={`w-14 rounded-full `}
                       src={currentUser.profilePic}
                       alt="user"
                     />
@@ -61,11 +60,7 @@ function Header() {
                   >
                     Profile
                   </Link>
-                  <Link
-                    to={`/upload`}
-                    className="btn btn-ghost text-lg
-                  "
-                  >
+                  <Link to={`/upload`} className="primary-btn">
                     Upload
                   </Link>
                   <SignOut />

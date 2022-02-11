@@ -16,33 +16,30 @@ const Search = lazy(() => import("./pages/Search"));
 //componts
 import Header from "./components/Header";
 import { CurrentUserProvider } from "./context/userContext";
-import { SearchProvider } from "./context/searchContext";
 
 function App() {
   return (
-    <div className="background h-screen">
+    <div className="background h-screen text-white overflow-y-auto global">
       <CurrentUserProvider>
-        <SearchProvider>
-          <Header />
-          <Suspense
-            fallback={
-              <main>
-                <h5 className="animate-bounce text-5xl">Loading...</h5>
-              </main>
-            }
-          >
-            <Routes>
-              <Route path={"/"} element={<Home />} />
-              <Route path="/upload" element={<Upload />} />
-              <Route path="/user/:username" element={<Profile />} />
-              <Route path="/post/:id" element={<Post />} />
-              <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/signin" element={<SignInPage />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="*" element={<h1>404</h1>} />
-            </Routes>
-          </Suspense>
-        </SearchProvider>
+        <Header />
+        <Suspense
+          fallback={
+            <main>
+              <h5 className="animate-bounce text-5xl">Loading...</h5>
+            </main>
+          }
+        >
+          <Routes>
+            <Route path={"/"} element={<Home />} />
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/user/:username" element={<Profile />} />
+            <Route path="/post/:id" element={<Post />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/signin" element={<SignInPage />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="*" element={<h1>404</h1>} />
+          </Routes>
+        </Suspense>
       </CurrentUserProvider>
     </div>
   );

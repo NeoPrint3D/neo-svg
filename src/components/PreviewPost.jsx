@@ -8,61 +8,65 @@ import {
 } from "react-icons/ai";
 import { useEffect, useContext, useState } from "react";
 import { CurrentUserContext } from "../context/userContext";
-import { doc, updateDoc } from "firebase/firestore/lite";
-import Img from "react-cool-img"
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  updateDoc,
+} from "firebase/firestore/lite";
+import Img from "react-cool-img";
 import placeholder from "../assets/placeholder.png";
 
 function PreviewPost(props) {
   const { post } = props;
   const currentUser = useContext(CurrentUserContext);
 
-  const [liked, setLiked] = useState(false);
-  const [like, setLikes] = useState("");
+  const [isLiked, setIsLiked] = useState(false);
+  const [likes, setLikes] = useState(0);
 
   useEffect(() => {
     setLikes(post.likes);
     if (currentUser) {
-      post.likedBy.includes(currentUser.uid) ? setLiked(true) : setLiked(false);
+      currentUser.likedPosts.includes(post.id)
+        ? setIsLiked(true)
+        : setIsLiked(false);
     }
-  }, [currentUser, post]);
+  }, []);
 
   const handleLike = async () => {
-    if (currentUser) {
-      if (liked) {
-        setLikes(like - 1);
-        updateDoc(doc(db, "posts", post.id), {
-          likedBy: post.likedBy.filter((id) => id !== currentUser.uid),
-          likes: like - 1,
-        });
-
-        updateDoc(doc(db, "users", currentUser.uid), {
-          liked: currentUser.liked.filter((id) => id !== post.id),
-        });
-        setLiked(false);
-      } else {
-        setLikes(like + 1);
-        updateDoc(doc(db, "posts", post.id), {
-          likedBy: [...post.likedBy, currentUser.uid],
-          likes: like + 1,
-        });
-        updateDoc(doc(db, "users", currentUser.uid), {
-          liked: [...currentUser.liked, post.id],
-        });
-        setLiked(true);
-      }
+    if (isLiked) {
+      setLikes(likes - 1);
+      updateDoc(doc(db, `posts`, post.id), {
+        likedBy: arrayRemove(currentUser.uid),
+      });
+      updateDoc(doc(db, `users`, currentUser.uid), {
+        likedPosts: arrayRemove(post.id),
+      });
+    } else {
+      updateDoc(doc(db, `posts`, post.id), {
+        likedBy: arrayUnion(currentUser.uid),
+      });
+      updateDoc(doc(db, `users`, currentUser.uid), {
+        likedPosts: arrayUnion(post.id),
+      });
+      setLikes(likes + 1);
     }
+    setIsLiked(!isLiked);
   };
 
   const handleView = () => {
-    updateDoc(doc(db, "posts", post.id), {
-      views: post.views + 1,
-    });
+    if (currentUser.uid !== post.author) {
+      updateDoc(doc(db, "posts", post.id), {
+        views: post.views + 1,
+      });
+    }
   };
 
   return (
-    <div className="bg-purple-800 rounded-2xl h-auto w-11/12 sm:w-full grid grid-rows-8  p-3 ease-in duration-100 popup-container">
-      <div className="grid grid-cols-5 items-center mt-2 ">
-        <div className="flex justify-start col-span-1 ml-2 mb-4">
+    <div className="bg-purple-600 rounded-2xl w-[95%] grid grid-rows-10 p-2 popup-container h-auto mx-auto">
+      {/*header*/}
+      <div className="grid grid-cols-5 items-center mt-2  row-span-3">
+        <div className="flex justify-start col-span-1 mb-5">
           <Link to={`/user/${post.authorName}`}>
             <img
               className="w-12 h-12 rounded-full "
@@ -71,6 +75,7 @@ function PreviewPost(props) {
             />
           </Link>
         </div>
+
         <div className="flex flex-col items-center col-span-3">
           <h4 className="text-2xl text-center font-semibold">{post.title}</h4>
           <h3 className="flex justify-center text-sm ">{post.authorName}</h3>
@@ -80,9 +85,9 @@ function PreviewPost(props) {
       {/*image*/}
       <div className="flex justify-center items-center row-span-3">
         <Link to={`/post/${post.id}`}>
-          <button onClick={() => handleView()}>
+          <button className="b p-3 rounded-2xl" onClick={() => handleView()}>
             <Img
-              className="transition-all max-h-56 rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
+              className="transition-all max-h-56 rounded-lg active:scale-90 active:blur-sm hover:shadow-2xl "
               src={post.file}
               placeholder={placeholder}
               alt="loading"
@@ -92,7 +97,7 @@ function PreviewPost(props) {
       </div>
 
       {/*action button*/}
-      <div className="grid grid-cols-3 row-span-3">
+      <div className="grid grid-cols-3 row-span-3 mt-5">
         <div className="flex justify-evenly items-center">
           <AiOutlineEye className="text-white" size={35} />
           <h1 className="text-2xl text-center">{post.views}</h1>
@@ -104,13 +109,19 @@ function PreviewPost(props) {
             onClick={() => handleLike()}
             className="disabled:opacity-20"
           >
-            {liked ? (
-              <AiFillLike size={35} className="text-green-500" />
+            {isLiked ? (
+              <AiFillLike
+                size={35}
+                className="transition-all text-green-500 hover:scale-90 active:text-purple-100"
+              />
             ) : (
-              <AiOutlineLike size={35} className="text-white" />
+              <AiOutlineLike
+                size={35}
+                className="text-white transition-all  hover:scale-110 active:text-purple-100"
+              />
             )}
           </button>
-          <h1 className="text-2xl text-center">{like}</h1>
+          <h1 className="text-2xl text-center">{likes}</h1>
         </div>
 
         <div className="flex justify-evenly items-center">

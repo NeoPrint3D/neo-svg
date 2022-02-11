@@ -3,6 +3,30 @@
 @tailwind components;
 @tailwind utilities;
 
+em {
+  @apply bg-purple-600;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-transparent
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+ @apply bg-purple-300/60 rounded-2xl hover:bg-purple-400
+}
+
+
+
+.primary-btn {
+  @apply transition-all p-3 font-bold bg-purple-500 rounded-xl text-xl hover:scale-95 hover:bg-purple-400;
+}
+
 .font-logo {
   font-family: "Pushster", sans-serif;
 }
@@ -29,18 +53,11 @@ main {
   @apply sticky top-0 z-10;
 }
 
-.glass-container {
-  background: rgba(124, 31, 239, 0.4);
-  -webkit-backdrop-filter: blur(50px);
-  backdrop-filter: blur(50px);
-  border: 1px solid rgba(124, 31, 239, 0.2);
-}
-
 .popup-container {
   animation: popIn 0.25s;
 }
-.action-hover{
-  @apply hover:bg-slate-600 p-1 rounded-xl
+.action-hover {
+  @apply hover:bg-slate-600 p-1 rounded-xl;
 }
 
 @keyframes popIn {

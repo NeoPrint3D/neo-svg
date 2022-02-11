@@ -17,7 +17,7 @@ function SignInPage() {
         window.location.href = "/";
       })
       .catch((err) => {
-        alert(err.message);
+        alert('Error signing in');
       });
   }
   

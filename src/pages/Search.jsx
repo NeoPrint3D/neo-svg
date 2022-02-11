@@ -6,12 +6,10 @@ import Img from "react-cool-img";
 import placeholder from "../assets/placeholder.png";
 import { CurrentUserContext } from "../context/userContext";
 
-import {
-  AiOutlineLike,
-  AiOutlineArrowDown,
-  AiOutlineEye,
-  AiFillLike,
-} from "react-icons/ai";
+function createMarkup(str) {
+  return { __html: str };
+}
+
 //get the items from algolia
 function Search() {
   const currentUser = useContext(CurrentUserContext);
@@ -41,8 +39,8 @@ function Search() {
           hitsPerPage: 50,
         })
         .then(({ hits }) => {
-          console.log(hits);
           setHits(hits);
+          console.log(hits);
         });
     } else if (search.length === 0) {
       index
@@ -54,12 +52,11 @@ function Search() {
             "image",
             "objectID",
             "authorPhoto",
-            "authorName",
           ],
+          highlightPostTag: ["title", "authorName", "description"],
           hitsPerPage: 50,
         })
         .then(({ hits }) => {
-          console.log(hits);
           setHits(hits);
         });
     }
@@ -73,28 +70,59 @@ function Search() {
           placeholder="Search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-gray-500 p-4 rounded-xl w-[30rem] "
+          className="bg-gray-500 p-4 rounded-xl w-3/4 "
         />
       </div>
-      <div className="flex flex-col items-center overflow-y-auto ">
+      <div className="flex flex-col items-center  h-[calc(100vh-13.5rem)] m-10">
         {hits.map((hit) => (
-          <div className="bg-gray-700 w-11/12 rounded-2xl my-10">
-            <Link to={`/post/${hit.objectID}`}>
-              <button onClick={() => ""}>
-                <Img
-                  className="transition-all max-h-56  rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
-                  src={hit.image}
-                  placeholder={placeholder}
-                  alt="loading"
+          <div
+            className=" bg-gray-700 w-11/12 rounded-2xl h-[20rem] my-10 carousel-item p-2"
+            key={hit.objectID}
+          >
+            <div className="flex flex-col items-center col-span-3 w-full">
+              <div className="flex justify-start w-full">
+                <img
+                  className="h-12 rounded-full"
+                  src={hit.authorPhoto}
+                  alt=""
                 />
-              </button>
-            </Link>
-            {/* <div className="flex flex-col items-center">
-              <h4 className="text-2xl text-center font-semibold">
-                {hit.title}
-              </h4>
-              <h3 className="flex justify-center text-sm ">{hit.authorName}</h3>
-            </div> */}
+                <div className="flex flex-col justify-center items-center ml-4">
+                  <Link
+                    to={`/post/${hit.objectID}`}
+                    className="text-4xl mb-2 font-bold mx-auto"
+                    dangerouslySetInnerHTML={createMarkup(
+                      hit.title.length > 15
+                        ? hit.title.slice(0, 15) + "..."
+                        : hit._highlightResult["title"].value
+                    )}
+                  ></Link>
+                  <div className="text-gray-500 text-sm"></div>
+                </div>
+              </div>
+
+              <h3 className="flex justify-center items-center text-sm "></h3>
+              <div
+                className="flex justify-center items-center h-full w-full"
+                dangerouslySetInnerHTML={createMarkup(
+                  hit._highlightResult["description"].value
+                )}
+              ></div>
+            </div>
+
+            <div className="divider divider-vertical"></div>
+
+            <div className="flex flex-col justify-center items-center">
+              <Link to={`/post/${hit.objectID}`}>
+                <button onClick={() => ""}>
+                  <Img
+                    className="transition-all max-h-[27.5rem]  rounded-lg active:scale-90 active:blur-sm hover:-hue-rotate-60 "
+                    src={hit.image}
+                    placeholder={placeholder}
+                    alt="loading"
+                  />
+                </button>
+              </Link>
+            </div>
           </div>
         ))}
       </div>

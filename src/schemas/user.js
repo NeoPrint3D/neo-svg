@@ -8,7 +8,7 @@ function userSchema(user) {
         uid: userRef.uid,
         email: userRef.email,
         bio: "",
-        liked: [],
+        likedPosts: [],
         folowers: [],
         following: [],
         posts: [],

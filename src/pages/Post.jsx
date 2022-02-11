@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { deleteObject, ref } from "firebase/storage";
 import { CurrentUserContext } from "../context/userContext";
+import { encrypt } from "../utils/encryption";
 import Loading from "../components/Loading";
 import {
   AiOutlineLike,
@@ -35,41 +36,45 @@ function Post() {
   }, [currentUser, post]);
 
   async function deletePost() {
-    //delete the image from storage
-    await deleteObject(ref(storage, "/images/" + post.id));
-    await deleteDoc(doc(db, "posts", id));
-    fetch(
-      `https://neo-svg-agolia.vercel.app/delete?id=${id}&key=${
-        import.meta.env.VITE_ALGOLIA_SYNC_KEY
-      }`
-    );
-    window.location.href = "/";
+    if (window.confirm("are you sure you want to delete this post?") && owns) {
+      deleteObject(ref(storage, "/images/" + post.id));
+      deleteDoc(doc(db, "posts", id));
+      await fetch("http://localhost:8080/deleteIndex", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: encrypt(post.id, import.meta.env.VITE_HASH_KEY),
+          key: import.meta.env.VITE_POST_KEY,
+        }),
+      });
+      window.location.href = "/";
+    }
   }
 
   const handleLike = async () => {
-    if (currentUser) {
-      if (liked) {
-        setLikes(likes - 1);
-        updateDoc(doc(db, "posts", post.id), {
-          likedBy: post.likedBy.filter((id) => id !== currentUser.uid),
-          likes: likes - 1,
-        });
+    if (liked && currentUser) {
+      setLikes(likes - 1);
+      updateDoc(doc(db, "posts", post.id), {
+        likedBy: post.likedBy.filter((id) => id !== currentUser.uid),
+        likes: likes - 1,
+      });
 
-        updateDoc(doc(db, "users", currentUser.uid), {
-          liked: currentUser.liked.filter((id) => id !== post.id),
-        });
-        setLiked(false);
-      } else {
-        setLikes(likes + 1);
-        updateDoc(doc(db, "posts", post.id), {
-          likedBy: [...post.likedBy, currentUser.uid],
-          likes: likes + 1,
-        });
-        updateDoc(doc(db, "users", currentUser.uid), {
-          liked: [...currentUser.liked, post.id],
-        });
-        setLiked(true);
-      }
+      updateDoc(doc(db, "users", currentUser.uid), {
+        liked: currentUser.liked.filter((id) => id !== post.id),
+      });
+      setLiked(false);
+    } else {
+      setLikes(likes + 1);
+      updateDoc(doc(db, "posts", post.id), {
+        likedBy: [...post.likedBy, currentUser.uid],
+        likes: likes + 1,
+      });
+      updateDoc(doc(db, "users", currentUser.uid), {
+        liked: [...currentUser.liked, post.id],
+      });
+      setLiked(true);
     }
   };
 
@@ -82,17 +87,13 @@ function Post() {
       .then((blob) => {
         const url = window.URL.createObjectURL(blob);
         //make the download link
-        const a = document.createElement("a");
-        a.style.display = "none";
-        a.href = url;
-        a.download = `${post.title}.svg`;
-        document.body.appendChild(a);
-        a.click();
+
+        return url;
       });
   }
 
   async function downloadPng() {
-    await updateDoc(doc(db, "posts", id), {
+    updateDoc(doc(db, "posts", id), {
       pngDownloads: post.pngDownloads + 1,
     }).then(() => {});
     await fetch(post.file)
@@ -124,13 +125,11 @@ function Post() {
         <div className="flex flex-col gap-5">
           <div className="flex flex-col items-center">
             <div className="flex flex-col gap-3">
-              <h1 className="text-5xl font-bold text-center">
-                {post.title.replace(/\b\w/g, (l) => l.toUpperCase())}
-              </h1>
+              <h1 className="text-5xl font-bold text-center">{post.title}</h1>
               <p className="text-center text-md">{`By: ${post.authorName}`}</p>
             </div>
           </div>
-          {owns ? (
+          {owns && (
             <div className="flex flex-col gap-3">
               <button
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
@@ -139,16 +138,14 @@ function Post() {
                 Delete
               </button>
             </div>
-          ) : null}
+          )}
 
           <div className="flex flex-col gap-5">
             <div className="flex flex-col items-center">
-              <div className="bg-purple-600 rounded-2xl">
+              <div className="bg-white rounded-2xl">
                 <img src={post.file} alt="" className=" max-h-96 m-4 " />
               </div>
-              <div>
-                {post.description}
-              </div>
+              <div>{post.description}</div>
             </div>
             <div className="flex justify-center ">
               <div className="grid grid-cols-3 w-96">
@@ -170,9 +167,15 @@ function Post() {
                     onClick={() => handleLike()}
                   >
                     {liked ? (
-                      <AiFillLike size={40} className="text-green-500" />
+                      <AiFillLike
+                        size={45}
+                        className="transition-all text-green-500 hover:scale-90 active:text-purple-100"
+                      />
                     ) : (
-                      <AiOutlineLike size={40} />
+                      <AiOutlineLike
+                        size={45}
+                        className="text-white transition-all  hover:scale-110 active:text-purple-100"
+                      />
                     )}
                   </button>
                   <h1 className="text-2xl font-bold text-center">{likes}</h1>

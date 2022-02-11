@@ -48,7 +48,7 @@ function SignUpPage() {
           const schema = userSchema(user);
           setDoc(doc(db, "users", user.user.uid), {
             ...schema,
-            profilePic: `https://avatars.dicebear.com/api/bottts/${username}.svg?color=purple`,
+            profilePic: `https://avatars.dicebear.com/api/bottts/${username}.svg?backgroundColor=purple`,
             username: username.replace(/\b\w/g, (l) => l.toUpperCase()),
           }).then(() => {
             window.location.href = "/";
@@ -62,32 +62,43 @@ function SignUpPage() {
     }
   }
 
-  async function resendAuthCode(e) {
-    e.preventDefault();
-    const url = `https://np3demail.herokuapp.com/auth?email=${email}&api_key=${
-      import.meta.env.VITE_API_MAIL_KEY
-    }`;
-    await fetch(url)
+  async function resendAuthCode() {
+    await fetch("https://neo-svg-backend.vercel.app/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        key: import.meta.env.VITE_AUTH_KEY,
+      }),
+    });
+    await fetch("https://neo-svg-backend.vercel.app/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        key: import.meta.env.VITE_AUTH_KEY,
+      }),
+    })
+      .then((res) => res.json())
       .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        alert("email has been sent");
-        setVfCode(decrypt(data.data, import.meta.env.VITE_HASH_KEY));
+        console.log(decrypt(res.data, import.meta.env.VITE_HASH_KEY));
+        setVfCode(decrypt(res.data, import.meta.env.VITE_HASH_KEY));
       });
   }
 
   async function sendAuthCode(e) {
     e.preventDefault();
-    const url = `https://np3demail.herokuapp.com/auth?email=${email}&api_key=${
-      import.meta.env.VITE_API_MAIL_KEY
-    }`;
 
     const q1 = query(
       collection(db, "users"),
       where("username", "==", username),
       limit(1)
     );
+
     const q2 = query(
       collection(db, "users"),
       where("email", "==", email),
@@ -113,12 +124,30 @@ function SignUpPage() {
 
     if (!users || !emails) {
       setModalOpen(true);
-      await fetch(url)
+      await fetch("https://neo-svg-backend.vercel.app/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          key: import.meta.env.VITE_AUTH_KEY,
+        }),
+      });
+      await fetch("https://neo-svg-backend.vercel.app/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          key: import.meta.env.VITE_AUTH_KEY,
+        }),
+      })
+        .then((res) => res.json())
         .then((res) => {
-          return res.json();
-        })
-        .then(async (data) => {
-          setVfCode(decrypt(data.data, import.meta.env.VITE_HASH_KEY));
+          console.log(decrypt(res.data, import.meta.env.VITE_HASH_KEY));
+          setVfCode(decrypt(res.data, import.meta.env.VITE_HASH_KEY));
         });
     } else {
       alert("Please check your credentials");
@@ -128,6 +157,7 @@ function SignUpPage() {
   return (
     <main>
       <div className="form-layout">
+        <button onClick={() => resendAuthCode()}>test</button>
         {!modalOpen && (
           <div className="popup-container">
             <form className="form-field" onSubmit={(e) => sendAuthCode(e)}>
@@ -210,9 +240,9 @@ function SignUpPage() {
               <div className="flex justify-center">
                 <input
                   className="text-center input-field text-black"
-                  placeholder="* * * *"
-                  type="text"
-                  maxLength={4}
+                  placeholder="* * * * * *"
+                  type="number"
+                  maxLength={6}
                   value={vfCodeConfirm}
                   onChange={(e) => setVfCodeConfirm(e.target.value)}
                 />

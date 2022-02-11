@@ -1,14 +1,31 @@
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { db, auth } from "../utils/firebase";
 import { FcGoogle } from "react-icons/fc";
-import { setDoc, doc, getDoc } from "firebase/firestore/lite";
+import {
+  setDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+  limit,
+  collection,
+} from "firebase/firestore/lite";
 import userSchema from "../schemas/user";
 function SignIn() {
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    const user = await getDoc(doc(db, "users", result.user.uid));
-    if (user.data()) {
+
+    const q = query(
+      collection(db,"users"),
+      where("email", "==", result.user.email),
+      limit(1)
+    );
+
+    const users = await getDocs(q);
+    console.log(users);
+
+    if (users.docs.length > 0) {
       console.log("user exists");
       window.location.href = "/";
     } else {
