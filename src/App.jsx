@@ -19,7 +19,7 @@ import { CurrentUserProvider } from "./context/userContext";
 
 function App() {
   return (
-    <div className="background h-screen text-white overflow-y-auto global">
+    <div className="background h-screen  overflow-y-auto  text-white">
       <CurrentUserProvider>
         <Header />
         <Suspense

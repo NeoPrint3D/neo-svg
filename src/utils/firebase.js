@@ -25,38 +25,4 @@ const auth = getAuth();
 const perf = getPerformance();
 const storage = getStorage();
 
-async function generateData() {
-    const chance = new Chance();
-    console.log("generated data");
-
-    for (let i = 0; i < 1000; i++) {
-        //grab a random picture from picsum
-
-        const image =
-            "https://picsum.photos/200/300?random=" +
-            Math.floor(Math.random() * 1000);
-        const id = ID(24);
-        await setDoc(doc(db, "posts", id), {
-            title: chance.sentence({ words: 2 }),
-            id: id,
-            description: chance.sentence({ words: 10 }),
-            file: image,
-            created: chance.timestamp(),
-            likes: Math.floor(Math.random() * 1000),
-            views: Math.floor(Math.random() * 5000),
-            downloads: Math.floor(Math.random() * 1000),
-            tags: [],
-            comments: [],
-            user: {
-                uid: chance.guid(),
-                name: chance.name(),
-                profilePic: chance.avatar(),
-            },
-        });
-    }
-}
-
-
-
-
 export { app, analytics, db, auth, storage, perf };
